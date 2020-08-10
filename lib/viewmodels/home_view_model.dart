@@ -1,3 +1,6 @@
+import 'package:flutter/services.dart';
+import 'package:mobile_number/mobile_number.dart';
+import 'package:mobile_number/sim_card.dart';
 import 'package:surveypptik/constants/const.dart';
 import 'package:surveypptik/constants/route_name.dart';
 import 'package:surveypptik/locator.dart';
@@ -39,6 +42,49 @@ class HomeViewModel extends BaseModel {
   String address = '';
 
   String pathLocation = 'data/kehadiran/image/';
+  String carrierName = '';
+  static const platform = const MethodChannel('jurnalamari.pptik.id/battery');
+  String battery = 'Unknown battery level.';
+  List<SimCard> simCard = <SimCard>[];
+  String mobileNumber = '';
+
+  Future<void> getBatteryLevel() async {
+    String batteryLevel;
+    try {
+      final int result = await platform.invokeMethod('getBatteryLevel');
+      batteryLevel = '$result';
+    } on PlatformException catch (e) {
+      batteryLevel = "-1";
+    }
+
+    battery = batteryLevel;
+    print(battery);
+  }
+
+  Future<void> initMobileNumberState() async {
+    if (!await MobileNumber.hasPhonePermission) {
+      await MobileNumber.requestPhonePermission;
+      return;
+    }
+    String mobileNumbers = '';
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      mobileNumbers = await MobileNumber.mobileNumber;
+      simCard = await MobileNumber.getSimCards;
+      mobileNumber = mobileNumbers;
+      simCard.map((e) => carrierName = e.carrierName);
+      print(simCard.map((e) => e.carrierName));
+      print("ini sim card ${simCard[0].carrierName}");
+      carrierName = simCard[0].carrierName;
+      print("ini carrier card ${carrierName}");
+    } on PlatformException catch (e) {
+      debugPrint("Failed to get mobile number because of '${e.message}'");
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+  }
 
   void onModelReady() {
     print('init the home');
@@ -46,6 +92,8 @@ class HomeViewModel extends BaseModel {
     checkStatusPermission(Permission.camera);
     checkStatusPermission(Permission.microphone);
     checkStatusPermission(Permission.location);
+    getBatteryLevel();
+    initMobileNumberState();
     getAllReport(pages);
     getLocation();
   }
@@ -163,6 +211,9 @@ class HomeViewModel extends BaseModel {
               name: '$name',
               status: 'REPORT',
               timestamp: '$timestamp',
+              signalCarrier: carrierName,
+              signalStrength: int.parse(battery),
+              signalType: "Null",
               unit: '$unit',
               reportType: CODE_KESEHATAN);
 
@@ -199,6 +250,9 @@ class HomeViewModel extends BaseModel {
               status: 'REPORT',
               timestamp: '$timestamp',
               unit: '$unit',
+              signalCarrier: carrierName,
+              signalStrength: int.parse(battery),
+              signalType: "Null",
               reportType: CODE_KESEHATAN);
 
           final data = sendAbsenToJson(message);
@@ -234,6 +288,9 @@ class HomeViewModel extends BaseModel {
               status: 'REPORT',
               timestamp: '$timestamp',
               unit: '$unit',
+              signalCarrier: carrierName,
+              signalStrength: int.parse(battery),
+              signalType: "Null",
               reportType: CODE_KESEHATAN);
 
           final data = sendAbsenToJson(message);
