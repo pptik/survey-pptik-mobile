@@ -106,7 +106,7 @@ class _AbsenViewState extends State<AbsenView> {
                       verticalSpaceSmall,
                       Visibility(
                         visible: false,
-                        child:LocationWidget(
+                        child: LocationWidget(
                           title: 'Lng',
                           content: '${model.lng}',
                           visible: model.isPathNull(),

@@ -1,4 +1,3 @@
-
 import 'package:dart_amqp/dart_amqp.dart';
 
 class RMQService {
@@ -15,7 +14,7 @@ class RMQService {
       virtualHost: vHostQueue,
     );
     Client client = new Client(settings: settings);
-
+    print("kirim data");
     client.channel().then((Channel channel) {
       return channel.queue(queues, durable: true);
     }).then((Queue queue) {

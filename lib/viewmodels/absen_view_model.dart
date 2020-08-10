@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
+import 'package:mobile_number/mobile_number.dart';
 import 'package:surveypptik/constants/const.dart';
 import 'package:surveypptik/constants/route_name.dart';
 import 'package:surveypptik/locator.dart';
@@ -32,8 +34,58 @@ class AbsenViewModel extends BaseModel {
   String address = '';
   String pathLocation = 'data/kehadiran/image/';
 
-  String kindOfReport ='#SayaSehat';
+  String kindOfReport = '#SayaSehat';
   TextEditingController commentController = TextEditingController();
+  String carrierName = '';
+  static const platform = const MethodChannel('jurnalamari.pptik.id/battery');
+  String battery = 'Unknown battery level.';
+  List<SimCard> simCard = <SimCard>[];
+  String mobileNumber = '';
+
+  Future<void> getBatteryLevel() async {
+    String batteryLevel;
+    try {
+      final int result = await platform.invokeMethod('getBatteryLevel');
+      batteryLevel = '$result';
+    } on PlatformException catch (e) {
+      batteryLevel = "-1";
+    }
+
+    battery = batteryLevel;
+    print(battery);
+  }
+
+  void init_state() async {
+    setBusy(true);
+    openLocationSetting();
+    initMobileNumberState();
+    getBatteryLevel();
+  }
+
+  Future<void> initMobileNumberState() async {
+    if (!await MobileNumber.hasPhonePermission) {
+      await MobileNumber.requestPhonePermission;
+      return;
+    }
+    String mobileNumbers = '';
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      mobileNumbers = await MobileNumber.mobileNumber;
+      simCard = await MobileNumber.getSimCards;
+      mobileNumber = mobileNumbers;
+      simCard.map((e) => carrierName = e.carrierName);
+      print(simCard.map((e) => e.carrierName));
+      print("ini sim card ${simCard[0].carrierName}");
+      carrierName = simCard[0].carrierName;
+      print("ini carrier card ${carrierName}");
+    } on PlatformException catch (e) {
+      debugPrint("Failed to get mobile number because of '${e.message}'");
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+  }
 
   Future<void> cameraView() async {
     try {
@@ -45,7 +97,8 @@ class AbsenViewModel extends BaseModel {
       await getLocation();
       print(imagePath);
     } on NoSuchMethodError catch (ne) {
-      throw StateError('On Back Pressed after no capture photo: ' + ne.toString());
+      throw StateError(
+          'On Back Pressed after no capture photo: ' + ne.toString());
     } on NullThrownError catch (nue) {
       throw StateError('NullThrownError: ' + nue.toString());
     } on Exception catch (e) {
@@ -53,18 +106,21 @@ class AbsenViewModel extends BaseModel {
     }
   }
 
-void openLocationSetting() async {
+  void openLocationSetting() async {
     // final AndroidIntent intent = new AndroidIntent(
     //   action: 'android.settings.LOCATION_SOURCE_SETTINGS',
     // );
     // await intent.launch();
+    initMobileNumberState();
+    getBatteryLevel();
     await _locationService.checkService();
   }
+
   void sendMessages(BuildContext context) async {
     setBusy(true);
 
-   final date = DateTime.now().millisecondsSinceEpoch.toString();
-    final timestamp = date.substring(0,10); 
+    final date = DateTime.now().millisecondsSinceEpoch.toString();
+    final timestamp = date.substring(0, 10);
     final name = await _storageService.getString(K_NAME);
     final company = await _storageService.getString(K_COMPANY);
     final unit = await _storageService.getString(K_UNIT);
@@ -80,7 +136,7 @@ void openLocationSetting() async {
           company: '$company',
           description: '${kindOfReport}#${commentController.text}',
           guid: '$guid',
-          image: '$pathLocation/$guid$timestamp-PPTIK.jpg',
+          image: '$pathLocation$guid$timestamp-PPTIK.jpg',
           lat: '$lat',
           long: '$lng',
           localImage: '$imagePath',
@@ -89,8 +145,10 @@ void openLocationSetting() async {
           status: 'REPORT',
           timestamp: '$timestamp',
           unit: '$unit',
-          reportType: CODE_FOTO
-          );
+          signalCarrier: carrierName,
+          signalStrength: int.parse(battery),
+          signalType: "Null",
+          reportType: CODE_FOTO);
 
       final sendAbsen = sendAbsenToJson(absenData);
       print(absenData);
@@ -163,7 +221,7 @@ void openLocationSetting() async {
     return true;
   }
 
-  void getValueRadio(int value){
+  void getValueRadio(int value) {
     switch (value) {
       case 1:
         kindOfReport = '#SayaSehat';
@@ -174,25 +232,26 @@ void openLocationSetting() async {
       case 3:
         kindOfReport = '#SayaButuhPertolongan';
         break;
-       default: {
-         kindOfReport = 'Tidak Ada Laporan Khusus';
-      }
-      break;
+      default:
+        {
+          kindOfReport = 'Tidak Ada Laporan Khusus';
+        }
+        break;
     }
   }
+
   Future<void> getLocation() async {
     setBusy(true);
-    try{
-    final userLocation = await _geolocatorService.getCurrentLocation();
-    lat = userLocation.latitude;
-    lng = userLocation.longitude;
-    address = userLocation.addressLine;
-    setBusy(false);
-
-    }catch(e){
+    try {
+      final userLocation = await _geolocatorService.getCurrentLocation();
+      lat = userLocation.latitude;
+      lng = userLocation.longitude;
+      address = userLocation.addressLine;
+      setBusy(false);
+    } catch (e) {
       setBusy(false);
 
-      cameraView();      
+      cameraView();
     }
   }
 }

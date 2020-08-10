@@ -44,14 +44,13 @@ class AlertService {
               content: new Text("$desc"),
               actions: <Widget>[
                 FlatButton(
-                  child: Text(
-                    "Done",
-                    style: TextStyle(
-                      color: Colors.blue,
+                    child: Text(
+                      "Done",
+                      style: TextStyle(
+                        color: Colors.blue,
+                      ),
                     ),
-                  ),
-                  onPressed: onCancel
-                ),
+                    onPressed: onCancel),
               ],
             ));
   }
@@ -59,9 +58,9 @@ class AlertService {
   void showError(
       BuildContext context, String title, String desc, Function onCancel) {
     showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) => new CupertinoAlertDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) => new CupertinoAlertDialog(
               title: new Text("$title"),
               content: new Text("$desc"),
               actions: <Widget>[
@@ -75,15 +74,14 @@ class AlertService {
                   onPressed: onCancel,
                 )
               ],
-            )
-    );
+            ));
   }
 
   void showWarning(
       BuildContext context, String title, String desc, Function onCancel) {
     showCupertinoDialog(
         context: context,
-          builder: (BuildContext context) => new CupertinoAlertDialog(
+        builder: (BuildContext context) => new CupertinoAlertDialog(
               title: new Text("$title"),
               content: new Text("$desc"),
               actions: <Widget>[

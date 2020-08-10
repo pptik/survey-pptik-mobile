@@ -16,7 +16,8 @@ import 'package:surveypptik/services/rmq_service.dart';
 import 'package:surveypptik/services/storage_service.dart';
 import 'package:surveypptik/services/permission_service.dart';
 import 'package:surveypptik/viewmodels/base_model.dart';
-import 'package:flutter/services.dart' show ByteData, MethodChannel, PlatformException, rootBundle;
+import 'package:flutter/services.dart'
+    show ByteData, MethodChannel, PlatformException, rootBundle;
 import 'dart:io';
 import 'dart:async';
 
@@ -30,8 +31,6 @@ class QuestionerViewModel extends BaseModel {
   final StorageService _storageService = locator<StorageService>();
   final AlertService _alertService = locator<AlertService>();
   final PermissionsService _permissionsService = locator<PermissionsService>();
-
-
 
   TextEditingController keteranganController = TextEditingController();
 
@@ -74,9 +73,8 @@ class QuestionerViewModel extends BaseModel {
       batteryLevel = "-1";
     }
 
-      battery = batteryLevel;
-      print(battery);
-
+    battery = batteryLevel;
+    print(battery);
   }
 
   Future<void> initMobileNumberState() async {
@@ -102,11 +100,9 @@ class QuestionerViewModel extends BaseModel {
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
-
   }
 
   void init_state() async {
-
     setBusy(true);
     initMobileNumberState();
     getBatteryLevel();
@@ -115,12 +111,11 @@ class QuestionerViewModel extends BaseModel {
         initMobileNumberState();
       } else {
         _permissionsService.requestPermission(Permission.phone);
-                _permissionsService.requestPermission(Permission.microphone);
+        _permissionsService.requestPermission(Permission.microphone);
       }
     });
 
     try {
-
       final userLocation = await _geolocatorService.getCurrentLocation();
       lat = userLocation.latitude;
       lng = userLocation.longitude;
@@ -163,7 +158,7 @@ class QuestionerViewModel extends BaseModel {
     setBusy(false);
     var id = province_data.singleWhere((element) => element.nama == value);
     print(id.kode);
-   get_city(id.toString());
+    get_city(id.toString());
   }
 
   void get_city(String id) async {
@@ -264,10 +259,11 @@ class QuestionerViewModel extends BaseModel {
         unit: '$unit',
         signalCarrier: carrierName,
         signalStrength: int.parse(battery),
+        signalType: "Null",
         reportType: CODE_QUIZ);
 
     final data = sendAbsenToJson(message);
-//    _rmqService.publish(data);
+    _rmqService.publish(data);
     print(data);
     showAlert(context);
   }
