@@ -92,8 +92,8 @@ class HomeViewModel extends BaseModel {
     checkStatusPermission(Permission.camera);
     checkStatusPermission(Permission.microphone);
     checkStatusPermission(Permission.location);
-    getBatteryLevel();
-    initMobileNumberState();
+    // getBatteryLevel();
+    // initMobileNumberState();
     getAllReport(pages);
     getLocation();
   }

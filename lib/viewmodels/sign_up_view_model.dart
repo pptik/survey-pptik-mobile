@@ -24,17 +24,17 @@ class SignUpViewModel extends BaseModel {
 
   List<String> units = List();
   List<String> profesi = List();
-  List<String> areasList =  List();
+  List<String> areasList = List();
   List<Item> areaForDistrcit = List();
   List<dynamic> districts = List();
   List<String> jurusanList = List();
 
-  String unitSelected ;
-  String profesiSelected;
+  String unitSelected;
+  String profesiSelected = "survey";
   String areasSelected;
   String districtSelected;
   String jurusanSelected;
-  String company;
+  String company = "SURV7";
   String imagePath;
 
   bool eula = false;
@@ -45,7 +45,7 @@ class SignUpViewModel extends BaseModel {
   TextEditingController passwordController = TextEditingController();
   TextEditingController phoneNumberCotroller = TextEditingController();
   TextEditingController idCardController = TextEditingController();
-  void onReady(){
+  void onReady() {
     profesi.add("Bukan Civitas ITB");
     profesi.add("Mahasiswa");
     profesi.add("Dosen");
@@ -58,12 +58,18 @@ class SignUpViewModel extends BaseModel {
 //    getAreas();
   }
 
-  void showEula(BuildContext context){
-    _alertService.showSuccess(context, "AMARI COVID19 End-User License Agreement \n (\"Agreement\")", Helper.eula_content, _navigationService.pop);
+  void showEula(BuildContext context) {
+    _alertService.showSuccess(
+        context,
+        "AMARI COVID19 End-User License Agreement \n (\"Agreement\")",
+        Helper.eula_content,
+        _navigationService.pop);
   }
-  void onChangeEula(bool value){
+
+  void onChangeEula(bool value) {
     eula = value;
   }
+
   Future<String> loadAsset() async {
     final a = await rootBundle.loadString('assets/level1.csv');
     final ab = json.decode(a);
@@ -71,27 +77,25 @@ class SignUpViewModel extends BaseModel {
     print(ab);
   }
 
-  Future<void> getAreas() async{
-
-    try{
+  Future<void> getAreas() async {
+    try {
       final data = await _apiService.areas();
-      if (data.code==200) {
+      if (data.code == 200) {
         print("add");
-        for(int i= 0 ;i<data.data.areas.length ;i++){
+        for (int i = 0; i < data.data.areas.length; i++) {
           areasList.add(data.data.areas[i].area);
         }
       } else {
         // User already registered
       }
-    }catch(e){
-
-    }
+    } catch (e) {}
   }
+
   void register(BuildContext context) async {
     setBusy(true);
     print('ini adalah image path $imagePath');
     try {
-      if(eula){
+      if (eula) {
         if (nameController.text.length != null &&
             positionController.text.length != null &&
             emailController.text.length != null &&
@@ -99,8 +103,7 @@ class SignUpViewModel extends BaseModel {
             phoneNumberCotroller.text.length != null &&
             company.length != null &&
             imagePath.length != null &&
-            profesiSelected != null
-        ) {
+            profesiSelected != null) {
           final name = nameController.text;
           final email = emailController.text;
           final position = positionController.text;
@@ -108,6 +111,8 @@ class SignUpViewModel extends BaseModel {
           final phoneNumber = phoneNumberCotroller.text;
           final idCard = idCardController.text;
           final companies = company;
+          print(companies);
+          print(profesiSelected);
           final data = await _apiService.register(
             name,
             email,
@@ -121,7 +126,7 @@ class SignUpViewModel extends BaseModel {
             File(imagePath),
           );
 
-          if (data.code==200) {
+          if (data.code == 200) {
             setBusy(false);
 
             // navigate to home
@@ -130,19 +135,18 @@ class SignUpViewModel extends BaseModel {
             setBusy(false);
 
             // User already registered
-            _alertService.showError(
-                context, 'Error', 'Something went wrong '+data.message, _navigationService.pop);
+            _alertService.showError(context, 'Error',
+                'Something went wrong ' + data.message, _navigationService.pop);
           }
         } else {
           setBusy(false);
           _alertService.showWarning(context, 'Warning',
               'Please fill in all fields', _navigationService.pop);
         }
-      }else{
+      } else {
         _alertService.showError(
             context, 'Error', 'Please Check Eula', _navigationService.pop);
       }
-
     } catch (e) {
       print(e.toString());
       _alertService.showError(
@@ -174,21 +178,22 @@ class SignUpViewModel extends BaseModel {
     setBusy(false);
   }
 
-  void getDistrict(String value){
+  void getDistrict(String value) {
     districts.clear();
     jurusanList.clear();
-    districtSelected=null;
+    districtSelected = null;
     jurusanSelected = null;
 //    print(areaForDistrcit.where((element) => element.areasDistrict==value).toList());
 //
 //    List<Item> data = areaForDistrcit.where((element) => element.areasDistrict==value).toList();
 //    districts.addAll(data)
-    for(int i=0 ; i<areaForDistrcit.length;i++){
-      if(areaForDistrcit[i].areasDistrict==value){
+    for (int i = 0; i < areaForDistrcit.length; i++) {
+      if (areaForDistrcit[i].areasDistrict == value) {
         districts.addAll(areaForDistrcit[i].district);
       }
     }
   }
+
   void onDistricChanged(String value) async {
     districtSelected = value;
     setBusy(false);
@@ -197,10 +202,10 @@ class SignUpViewModel extends BaseModel {
     jurusanList.clear();
 
     final data = await _apiService.jurusan(areasSelected, value);
-    if (data.code==200) {
+    if (data.code == 200) {
       print("add");
       data.data.forEach((element) {
-        jurusanList.add(element.companyName + '-' +element.companyCode);
+        jurusanList.add(element.companyName + '-' + element.companyCode);
       });
     } else {
       // User already registered
@@ -216,7 +221,6 @@ class SignUpViewModel extends BaseModel {
     setBusy(false);
     company = value.split('-')[1];
     print(value.split('-')[1]);
-
   }
 
   void getAreaUnit(String value) async {
@@ -224,13 +228,13 @@ class SignUpViewModel extends BaseModel {
     profesiSelected = value;
     areasSelected = null;
     districtSelected = null;
-    jurusanSelected=null;
+    jurusanSelected = null;
     districts.clear();
     areasList.clear();
     jurusanList.clear();
 
     final data = await _apiService.areas();
-    if (data.code==200) {
+    if (data.code == 200) {
       print("add");
       data.data.areas.forEach((element) {
         areasList.add(element.area);
@@ -244,6 +248,7 @@ class SignUpViewModel extends BaseModel {
     print('units => $units');
     print('visi => ${changeVisibility()}');
   }
+
   void onAreasChanged(String value) {
     areasSelected = value;
 
@@ -251,20 +256,22 @@ class SignUpViewModel extends BaseModel {
     setBusy(false);
   }
 
-  bool changeVisibilityDistrict(){
-    if(districts== null || districts.isEmpty){
+  bool changeVisibilityDistrict() {
+    if (districts == null || districts.isEmpty) {
       return false;
-    }else{
+    } else {
       return true;
     }
   }
-  bool changeVisibilityAreas(){
-    if(areasList== null || areasList.isEmpty){
+
+  bool changeVisibilityAreas() {
+    if (areasList == null || areasList.isEmpty) {
       return false;
-    }else{
+    } else {
       return true;
     }
   }
+
   bool changeVisibility() {
     if (units == null || units.isEmpty) {
       return false;
@@ -273,17 +280,18 @@ class SignUpViewModel extends BaseModel {
     }
   }
 
-  void getJurusan(String value)async{
-    jurusanSelected=null;
+  void getJurusan(String value) async {
+    jurusanSelected = null;
     jurusanList.clear();
     final data = await _apiService.jurusan(areasSelected, value);
-    if(data.code ==200){
+    if (data.code == 200) {
       data.data.forEach((element) {
-        jurusanList.add(element.companyName+'-'+element.companyCode);
+        jurusanList.add(element.companyName + '-' + element.companyCode);
         print("data ${element.companyCode}");
       });
     }
   }
+
   void getCompanyUnit(String code) async {
     setBusy(false);
     unitSelected = null;

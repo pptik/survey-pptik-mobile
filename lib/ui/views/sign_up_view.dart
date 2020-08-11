@@ -14,10 +14,12 @@ import 'package:stacked/stacked.dart';
 
 // import flutter services
 import 'package:flutter/services.dart';
-class SignUpView extends StatefulWidget{
+
+class SignUpView extends StatefulWidget {
   @override
   _SignUpViewState createState() => _SignUpViewState();
 }
+
 class _SignUpViewState extends State<SignUpView> {
   bool eulaVal = false;
   @override
@@ -27,17 +29,16 @@ class _SignUpViewState extends State<SignUpView> {
 //    Provider.of<SignUpViewModel>(context,listen: false).getAreas();
 //  context.read<SignUpViewModel>().getAreas();
   }
+
   @override
   Widget build(BuildContext context) {
-    
     // Lock Orientation Portait Only
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    
-    return ViewModelBuilder<SignUpViewModel>.reactive(
-      viewModelBuilder: () =>SignUpViewModel(),
 
+    return ViewModelBuilder<SignUpViewModel>.reactive(
+      viewModelBuilder: () => SignUpViewModel(),
       onModelReady: (model) => model.onReady(),
       builder: (context, model, child) => Scaffold(
         body: LoadingOverlay(
@@ -45,7 +46,6 @@ class _SignUpViewState extends State<SignUpView> {
           child: SafeArea(
             child: SingleChildScrollView(
               child: Container(
-
                 child: Center(
                   child: Column(
                     children: <Widget>[
@@ -62,135 +62,6 @@ class _SignUpViewState extends State<SignUpView> {
                         isPassword: false,
                         textFieldController: model.nameController,
                       ),
-                      verticalSpaceSmall,
-                      Container(
-                        padding: fieldPadding,
-                        width: screenWidthPercent(
-                          context,
-                          multipleBy: 0.9,
-                        ),
-                        height: fieldHeight,
-                        child: DropdownButton(
-                          isExpanded: true,
-                          hint: Text('Profesi'),
-                          value: model.profesiSelected,
-                          items: model.profesi == null
-                              ? null
-                              : model.profesi.map(
-                                (value) {
-                              return DropdownMenuItem(
-                                child: Text(value),
-                                value: value,
-                              );
-                            },
-                          ).toList(),
-                          onChanged: (value) {
-                            model.getAreaUnit(value);
-                          },
-                        ),
-                      ),
-                      Visibility(
-                        visible: model.changeVisibilityAreas(),
-                        child:verticalSpaceSmall,
-                      ),
-                      Visibility(
-                        visible: model.changeVisibilityAreas(),
-                        child:                      Container(
-                          padding: fieldPadding,
-                          width: screenWidthPercent(
-                            context,
-                            multipleBy: 0.9,
-                          ),
-                          height: fieldHeight,
-                          child: DropdownButton(
-                            isExpanded: true,
-                            hint: Text('Area'),
-                            value: model.areasSelected,
-                            items: model.areasList == null
-                                ? null
-                                : model.areasList.map(
-                                  (value) {
-                                return DropdownMenuItem(
-                                  child: Text(value),
-                                  value: value,
-                                );
-                              },
-                            ).toList(),
-                            onChanged: (value) {
-                              model.onAreasChanged(value);
-//                              model.getDistrict(v);
-                            },
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: model.changeVisibilityAreas(),
-                        child:verticalSpaceSmall,
-                      ),
-                      Visibility(
-                        visible: model.changeVisibilityAreas(),
-                        child:                      Container(
-                          padding: fieldPadding,
-                          width: screenWidthPercent(
-                            context,
-                            multipleBy: 0.9,
-                          ),
-                          height: fieldHeight,
-                          child: DropdownButton(
-                            isExpanded: true,
-                            hint: Text('District'),
-                            value: model.districtSelected,
-                            items: model.districts == null
-                                ? null
-                                : model.districts.map(
-                                  (value) {
-                                return DropdownMenuItem(
-                                  child: Text(value),
-                                  value: value,
-                                );
-                              },
-                            ).toList(),
-                            onChanged: (value) {
-                              model.onDistricChanged(value);
-
-                            },
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: model.changeVisibilityAreas(),
-                        child:verticalSpaceSmall,
-                      ),
-                      Visibility(
-                        visible: model.changeVisibilityAreas(),
-                        child:                      Container(
-                          padding: fieldPadding,
-                          width: screenWidthPercent(
-                            context,
-                            multipleBy: 0.9,
-                          ),
-                          height: fieldHeight,
-                          child: DropdownButton(
-                            isExpanded: true,
-                            hint: Text('Jurusan'),
-                            value: model.jurusanSelected,
-                            items: model.jurusanList == null
-                                ? null
-                                : model.jurusanList.map(
-                                  (value) {
-                                return DropdownMenuItem(
-                                  child: Text(value),
-                                  value: value,
-                                );
-                              },
-                            ).toList(),
-                            onChanged: (value) {
-                              model.onJurusanChanged(value);
-                            },
-                          ),
-                        ),
-                      ),
-
                       verticalSpaceSmall,
                       TextFieldWidget(
                         hintText: 'Email',
@@ -259,12 +130,11 @@ class _SignUpViewState extends State<SignUpView> {
                         ),
                       ),
                       verticalSpaceMedium,
-
                       Row(
                         children: <Widget>[
                           Checkbox(
                             value: eulaVal,
-                            onChanged: (bool value){
+                            onChanged: (bool value) {
                               setState(() {
                                 eulaVal = value;
                               });
@@ -275,7 +145,7 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           InkWell(
                             child: Text("Saya Paham dan setuju dng  isi EULA"),
-                            onTap: (){
+                            onTap: () {
                               model.showEula(context);
                             },
                           )
