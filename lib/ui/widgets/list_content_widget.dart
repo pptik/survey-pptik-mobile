@@ -24,26 +24,26 @@ class ListContentWidget extends StatelessWidget {
   final String name;
   final String imageUrl;
   final String imageLocal;
-  Future<bool> checkimageAssets()async{
-    if(await rootBundle.loadString('assets/${imageLocal}') !=null){
+  Future<bool> checkimageAssets() async {
+    if (await rootBundle.loadString('assets/${imageLocal}') != null) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
-  Widget _BuildImage(){
-    if( File(imageLocal).exists() == true){
-      return Image.file(
-      File(imageLocal),
-    fit: BoxFit.cover,
-    width: 250,
-    height: 250,
-    );
 
-    }else if(File(imageLocal).exists() == true || checkimageAssets() == null){
+  Widget _BuildImage() {
+    if (File(imageLocal).exists() == true) {
+      return Image.file(
+        File(imageLocal),
+        fit: BoxFit.cover,
+        width: 250,
+        height: 250,
+      );
+    } else if (File(imageLocal).exists() == true ||
+        checkimageAssets() == null) {
       CachedNetworkImage(
-        placeholder: (context, url) =>
-            CircularProgressIndicator(),
+        placeholder: (context, url) => CircularProgressIndicator(),
         imageUrl: imageUrl,
         fit: BoxFit.cover,
         width: 250,
@@ -51,6 +51,7 @@ class ListContentWidget extends StatelessWidget {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -70,21 +71,21 @@ class ListContentWidget extends StatelessWidget {
           children: <Widget>[
             AspectRatio(
               aspectRatio: 5 / 6,
-              child:File(imageLocal).exists() == true
+              child: File(imageLocal).exists() == true
                   ? new Image.file(
-                File(imageLocal),
-                fit: BoxFit.cover,
-                width: 250,
-                height: 250,
-              )
+                      File(imageLocal),
+                      fit: BoxFit.cover,
+                      width: 250,
+                      height: 250,
+                    )
                   : CachedNetworkImage(
-                placeholder: (context, url) =>
-                    CircularProgressIndicator(),
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                width: 250,
-                height: 250,
-              ),
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      width: 250,
+                      height: 250,
+                    ),
             ),
             Flexible(
               child: Container(

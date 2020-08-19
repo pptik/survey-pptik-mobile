@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:mobile_number/mobile_number.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:surveypptik/constants/const.dart';
 import 'package:surveypptik/constants/route_name.dart';
 import 'package:surveypptik/locator.dart';
@@ -10,6 +12,7 @@ import 'package:surveypptik/services/alert_service.dart';
 import 'package:surveypptik/services/api_service.dart';
 import 'package:surveypptik/services/ftp_service.dart';
 import 'package:surveypptik/services/geolocator_service.dart';
+import 'package:surveypptik/services/guid_service.dart';
 import 'package:surveypptik/services/location_service.dart';
 import 'package:surveypptik/services/navigation_service.dart';
 import 'package:surveypptik/services/rmq_service.dart';
@@ -26,6 +29,7 @@ class AbsenViewModel extends BaseModel {
   final FtpService _ftpService = locator<FtpService>();
   final RMQService _rmqService = locator<RMQService>();
   final LocationService _locationService = locator<LocationService>();
+  final GuidService _guidService = locator<GuidService>();
 
   String imagePath = '';
   String imageName = '';
@@ -60,6 +64,7 @@ class AbsenViewModel extends BaseModel {
     openLocationSetting();
     initMobileNumberState();
     getBatteryLevel();
+    writeAttendance("some text");
   }
 
   Future<void> initMobileNumberState() async {
@@ -113,6 +118,7 @@ class AbsenViewModel extends BaseModel {
     // await intent.launch();
     initMobileNumberState();
     getBatteryLevel();
+
     await _locationService.checkService();
   }
 
@@ -126,34 +132,33 @@ class AbsenViewModel extends BaseModel {
     final unit = await _storageService.getString(K_UNIT);
     final guid = await _storageService.getString(K_GUID);
     print("ini tanggal ${timestamp}");
+
     bool isSuccess =
         await _ftpService.uploadFile(File(imagePath), guid, timestamp);
-
+    var absenData = SendAbsen(
+        address: '$address',
+        cmdType: 0,
+        company: '$company',
+        description: '${kindOfReport}#${commentController.text}',
+        guid: '$guid',
+        image: '$pathLocation$guid$timestamp-PPTIK.jpg',
+        lat: '$lat',
+        long: '$lng',
+        localImage: '$imagePath',
+        msgType: 1,
+        name: '$name',
+        status: 'REPORT',
+        timestamp: '$timestamp',
+        unit: '$unit',
+        signalCarrier: carrierName,
+        signalStrength: int.parse(battery),
+        signalType: "Null",
+        reportType: CODE_FOTO);
     if (isSuccess) {
-      var absenData = SendAbsen(
-          address: '$address',
-          cmdType: 0,
-          company: '$company',
-          description: '${kindOfReport}#${commentController.text}',
-          guid: '$guid',
-          image: '$pathLocation$guid$timestamp-PPTIK.jpg',
-          lat: '$lat',
-          long: '$lng',
-          localImage: '$imagePath',
-          msgType: 1,
-          name: '$name',
-          status: 'REPORT',
-          timestamp: '$timestamp',
-          unit: '$unit',
-          signalCarrier: carrierName,
-          signalStrength: int.parse(battery),
-          signalType: "Null",
-          reportType: CODE_FOTO);
-
       final sendAbsen = sendAbsenToJson(absenData);
       print(absenData);
       _rmqService.publish(sendAbsen);
-
+      storeFile("O", absenData.toJson().toString());
       _alertService.showSuccess(
         context,
         'Success',
@@ -164,8 +169,12 @@ class AbsenViewModel extends BaseModel {
       );
     } else {
       //
-      _alertService.showWarning(context, 'Warning',
-          'Connection to server problem', _navigationService.pop);
+      _alertService.showWarning(
+          context,
+          'Warning',
+          'Connection to server problem, data temporarily will be saved om the device',
+          _navigationService.pop);
+      storeFile("O", absenData.toJson().toString());
     }
 
     setBusy(false);
@@ -252,6 +261,46 @@ class AbsenViewModel extends BaseModel {
       setBusy(false);
 
       cameraView();
+    }
+  }
+
+  Future<String> get localPath async {
+    final dir = await getExternalStorageDirectory();
+    return dir.path;
+  }
+
+  Future<void> writeAttendance(String text) async {
+    final file = await localFile;
+    print(file.toString());
+    await file.writeAsString(text);
+  }
+
+  Future<File> checkDirectorty(String guid, String state) async {
+    final path = await localPath;
+
+    return File('${path}/$state-$guid.txt');
+  }
+
+  Future<void> storeFile(String status, String payload) async {
+    String guid = _guidService.generateGuid();
+    final file = await checkDirectorty("$guid", "$status");
+    await file.writeAsString("$payload");
+  }
+
+  Future<File> get localFile async {
+    String guid = await _storageService.getString(K_GUID);
+    final path = await localPath;
+    return File('$path/$guid.txt');
+  }
+
+  Future<String> readData() async {
+    try {
+      final file = await localFile;
+      String body = await file.readAsString();
+      print(body);
+      return body;
+    } catch (e) {
+      return e.toString();
     }
   }
 }

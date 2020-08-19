@@ -13,14 +13,13 @@ class StartUpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     // Lock Orientation Portait Only
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    
+
     return ViewModelBuilder<StartUpViewModel>.reactive(
-      viewModelBuilder: () =>StartUpViewModel(),
+      viewModelBuilder: () => StartUpViewModel(),
       onModelReady: (model) => model.startTimer(),
       builder: (context, model, child) => Scaffold(
         body: Center(
@@ -41,11 +40,10 @@ class StartUpView extends StatelessWidget {
               ),
               verticalSpaceMedium,
               CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation(
-                  Theme.of(context).primaryColor,
-                )   
-              ),
+                  strokeWidth: 3,
+                  valueColor: AlwaysStoppedAnimation(
+                    Theme.of(context).primaryColor,
+                  )),
               verticalSpaceMedium,
               verticalSpaceMedium,
               Text(
