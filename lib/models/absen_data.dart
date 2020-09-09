@@ -25,41 +25,39 @@ class AbsenData {
   String type;
   String reportType;
 
-  AbsenData({
-    this.id,
-    this.name,
-    this.long,
-    this.lat,
-    this.address,
-    this.status,
-    this.localImage,
-    this.timestamp,
-    this.image,
-    this.guid,
-    this.company,
-    this.unit,
-    this.description,
-    this.type,
-    this.reportType
-  });
+  AbsenData(
+      {this.id,
+      this.name,
+      this.long,
+      this.lat,
+      this.address,
+      this.status,
+      this.localImage,
+      this.timestamp,
+      this.image,
+      this.guid,
+      this.company,
+      this.unit,
+      this.description,
+      this.type,
+      this.reportType});
 
   factory AbsenData.fromJson(Map<String, dynamic> json) => AbsenData(
-        id: json["_id"],
-        name: json["NAME"],
-        long: json["LONG"],
-        lat: json["LAT"],
-        address: json["ADDRESS"],
-        status: json["STATUS"],
-        localImage: json["LOCAL_IMAGE"],
-        timestamp: json["TIMESTAMP"],
-        image: json["IMAGE"],
-        guid: json["GUID"],
-        company: json["COMPANY"],
-        unit: json["UNIT"],
-        description: json["DESCRIPTION"],
-        type: json["TYPE"],
-        reportType: json["REPORT_TYPE"]
-      );
+      id: json["_id"],
+      name: json["NAME"],
+      long: json["LONG"],
+      lat: json["LAT"],
+      address: json["ADDRESS"],
+      status: json["STATUS"],
+      localImage: json["LOCAL_IMAGE"],
+      timestamp: json["TIMESTAMP"],
+      image: json["IMAGE"],
+      guid: json["GUID"],
+      company: json["COMPANY"],
+      unit: json["UNIT"],
+      description: json["DESCRIPTION"],
+      type: json["TYPE"],
+      reportType: json["REPORT_TYPE"]);
 
   Map<String, dynamic> toJson() => {
         "_id": id,
@@ -76,6 +74,6 @@ class AbsenData {
         "UNIT": unit,
         "DESCRIPTION": description,
         "TYPE": type,
-        "REPORT_TYPE":reportType
+        "REPORT_TYPE": reportType
       };
 }

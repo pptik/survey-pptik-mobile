@@ -118,23 +118,33 @@ class AbsenViewModel extends BaseModel {
     // await intent.launch();
     initMobileNumberState();
     getBatteryLevel();
+    cek_data();
 
     await _locationService.checkService();
   }
 
+  Future<String> cek_data() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        return "connected";
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      return "disconnected";
+    }
+  }
+
   void sendMessages(BuildContext context) async {
     setBusy(true);
-
     final date = DateTime.now().millisecondsSinceEpoch.toString();
     final timestamp = date.substring(0, 10);
     final name = await _storageService.getString(K_NAME);
     final company = await _storageService.getString(K_COMPANY);
     final unit = await _storageService.getString(K_UNIT);
     final guid = await _storageService.getString(K_GUID);
-    print("ini tanggal ${timestamp}");
-
-    bool isSuccess =
-        await _ftpService.uploadFile(File(imagePath), guid, timestamp);
+    String network = '';
     var absenData = SendAbsen(
         address: '$address',
         cmdType: 0,
@@ -154,27 +164,61 @@ class AbsenViewModel extends BaseModel {
         signalStrength: int.parse(battery),
         signalType: "Null",
         reportType: CODE_FOTO);
-    if (isSuccess) {
-      final sendAbsen = sendAbsenToJson(absenData);
-      print(absenData);
-      _rmqService.publish(sendAbsen);
-      storeFile("O", absenData.toJson().toString());
-      _alertService.showSuccess(
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        network = 'connected';
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      network = 'disconnect';
+    }
+
+    if (network == 'connected') {
+      bool isSuccess =
+          await _ftpService.uploadFile(File(imagePath), guid, timestamp);
+      if (isSuccess) {
+        final sendAbsen = sendAbsenToJson(absenData);
+        print("tes");
+        print(sendAbsen);
+        print(absenData);
+        _rmqService.publish(sendAbsen);
+        storeFile("O", sendAbsen);
+        _alertService.showSuccess(
+          context,
+          'Success',
+          '',
+          () {
+            _navigationService.replaceTo(HomeViewRoute);
+          },
+        );
+      } else {
+        //
+        _alertService.showWarning(
+          context,
+          'Warning',
+          'Connection to server problem, data temporarily will be saved om the device',
+          () {
+            _navigationService.replaceTo(HomeViewRoute);
+          },
+        );
+        print("absen");
+        print(absenData.toJson());
+        storeFile("X", sendAbsenToJson(absenData));
+      }
+    } else {
+      _alertService.showWarning(
         context,
-        'Success',
-        '',
+        'Warning',
+        'Connection to server problem, data temporarily will be saved om the device',
         () {
           _navigationService.replaceTo(HomeViewRoute);
         },
       );
-    } else {
-      //
-      _alertService.showWarning(
-          context,
-          'Warning',
-          'Connection to server problem, data temporarily will be saved om the device',
-          _navigationService.pop);
-      storeFile("O", absenData.toJson().toString());
+      print("absen");
+      print(absenData.toJson());
+      storeFile("X", sendAbsenToJson(absenData));
     }
 
     setBusy(false);
@@ -277,8 +321,17 @@ class AbsenViewModel extends BaseModel {
 
   Future<File> checkDirectorty(String guid, String state) async {
     final path = await localPath;
-
-    return File('${path}/$state-$guid.txt');
+    final Directory folder = Directory('$path/report');
+    if (await folder.exists()) {
+      return File('${path}/report/$state-$guid.txt');
+    } else {
+      final Directory dir = await folder.create(recursive: true);
+      if (await dir.exists()) {
+        return File('${path}/report/$state-$guid.txt');
+      } else {
+        checkDirectorty(guid, state);
+      }
+    }
   }
 
   Future<void> storeFile(String status, String payload) async {

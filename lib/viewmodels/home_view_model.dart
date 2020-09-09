@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:mobile_number/mobile_number.dart';
 import 'package:mobile_number/sim_card.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:surveypptik/constants/const.dart';
 import 'package:surveypptik/constants/route_name.dart';
 import 'package:surveypptik/locator.dart';
@@ -48,6 +52,35 @@ class HomeViewModel extends BaseModel {
   List<SimCard> simCard = <SimCard>[];
   String mobileNumber = '';
 
+  String directory;
+  List file = new List();
+  Future<void> getReportInternal() async {
+    directory = (await getExternalStorageDirectory()).path;
+    String path = '$directory/report/';
+    file = Directory('$path').listSync();
+    for (int i = 0; i < file.length; i++) {
+      File newfile = new File(file[i].toString());
+      print(newfile.path.split("/").last.replaceAll("'", ""));
+      File datasurevey =
+          new File('$path' + newfile.path.split("/").last.replaceAll("'", ""));
+      final text = json.decode(datasurevey.readAsStringSync());
+      print(text["DESCRIPTION"]);
+      absenData.add(AbsenData(
+          address: text["ADDRESS"],
+          description: text["DESCRIPTION"],
+          id: text["GUID"],
+          image: text["IMAGE"],
+          name: text["NAME"],
+          timestamp: int.parse(text["TIMESTAMP"]),
+          localImage: text["LOCAL_IMAGE"]));
+
+      // List<String> data_named = file[i].toString().split("/");
+      // print(data_named[i]);
+    }
+    print(file.length);
+    print(directory);
+  }
+
   Future<void> getBatteryLevel() async {
     String batteryLevel;
     try {
@@ -94,7 +127,8 @@ class HomeViewModel extends BaseModel {
     checkStatusPermission(Permission.location);
     // getBatteryLevel();
     // initMobileNumberState();
-    getAllReport(pages);
+    // getAllReport(pages);
+    getReportInternal();
     getLocation();
   }
 
@@ -134,6 +168,8 @@ class HomeViewModel extends BaseModel {
     absenData.clear();
     final company = await _storageService.getString(K_COMPANY);
     final guid = await _storageService.getString(K_GUID);
+    final report = await getExternalStorageDirectory();
+    print('${report.path}/report');
     data = await _apiService.getReport(company, guid, page);
     // totalPages = data.numberOfPages;
     data.data.forEach(
