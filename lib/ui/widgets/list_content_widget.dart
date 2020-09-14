@@ -32,8 +32,10 @@ class ListContentWidget extends StatelessWidget {
     }
   }
 
-  Widget _BuildImage() {
+  Widget _BuildImage(BuildContext context) {
+    print("data image $imageLocal");
     if (File(imageLocal).exists() == true) {
+      print("object true");
       return Image.file(
         File(imageLocal),
         fit: BoxFit.cover,
@@ -69,24 +71,7 @@ class ListContentWidget extends StatelessWidget {
         color: white,
         child: Row(
           children: <Widget>[
-            AspectRatio(
-              aspectRatio: 5 / 6,
-              child: File(imageLocal).exists() == true
-                  ? new Image.file(
-                      File(imageLocal),
-                      fit: BoxFit.cover,
-                      width: 250,
-                      height: 250,
-                    )
-                  : CachedNetworkImage(
-                      placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      width: 250,
-                      height: 250,
-                    ),
-            ),
+            AspectRatio(aspectRatio: 5 / 6, child: _BuildImage(context)),
             Flexible(
               child: Container(
                 padding: EdgeInsets.only(

@@ -39,7 +39,7 @@ class _SignUpViewState extends State<SignUpView> {
 
     return ViewModelBuilder<SignUpViewModel>.reactive(
       viewModelBuilder: () => SignUpViewModel(),
-      onModelReady: (model) => model.onReady(),
+      //  onModelReady: (model) => model.onReady(),
       builder: (context, model, child) => Scaffold(
         body: LoadingOverlay(
           isLoading: model.busy,
@@ -71,6 +71,52 @@ class _SignUpViewState extends State<SignUpView> {
                         textFieldController: model.emailController,
                       ),
                       verticalSpaceSmall,
+                      TextFieldOnChangedWidget(
+                        hintText: 'Registration Code',
+                        icon: Icons.code,
+                        keyboardType: TextInputType.text,
+                        isPassword: false,
+                        onChanged: (value) {
+                          if (value != null && value.toString().isNotEmpty) {
+                            model.company = value;
+                            model.getCompanyUnit(value);
+                          }
+                        },
+                      ),
+                      Visibility(
+                        visible: model.changeVisibility(),
+                        child: verticalSpaceSmall,
+                      ),
+                      Visibility(
+                        visible: model.changeVisibility(),
+                        child: Container(
+                          padding: fieldPadding,
+                          width: screenWidthPercent(
+                            context,
+                            multipleBy: 0.9,
+                          ),
+                          height: fieldHeight,
+                          child: DropdownButton(
+                            isExpanded: true,
+                            hint: Text('Choose Unit'),
+                            value: model.unitSelected,
+                            items: model.units == null
+                                ? null
+                                : model.units.map(
+                                    (value) {
+                                      return DropdownMenuItem(
+                                        child: Text(value),
+                                        value: value,
+                                      );
+                                    },
+                                  ).toList(),
+                            onChanged: (value) {
+                              model.onUnitChanged(value);
+                            },
+                          ),
+                        ),
+                      ),
+                      verticalSpaceSmall,
                       TextFieldWidget(
                         hintText: 'No KTP/ NISN /NIP',
                         icon: Icons.format_list_numbered,
@@ -92,7 +138,7 @@ class _SignUpViewState extends State<SignUpView> {
                         icon: Icons.phone,
                         keyboardType: TextInputType.phone,
                         isPassword: false,
-                        textFieldController: model.phoneNumberCotroller,
+                        textFieldController: model.phoneNumberController,
                       ),
                       verticalSpaceSmall,
                       InkWell(

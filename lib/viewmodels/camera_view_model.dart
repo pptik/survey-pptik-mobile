@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class CameraViewModel extends BaseModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final StorageService _storageService = locator<StorageService>();
@@ -22,7 +21,7 @@ class CameraViewModel extends BaseModel {
   void initModel(bool mounted) {
     getAvailableCamera(mounted);
   }
-  
+
   void getAvailableCamera(bool mounted) {
     availableCameras().then((availableCameras) {
       cameras = availableCameras;
@@ -80,7 +79,7 @@ class CameraViewModel extends BaseModel {
   }
 
   void onCapturePressed(context) async {
-      final guid = await _storageService.getString(K_GUID);
+    final guid = await _storageService.getString(K_GUID);
 
     // Take the Picture in a try / catch block. If anything goes wrong,
     // catch the error.
@@ -92,8 +91,8 @@ class CameraViewModel extends BaseModel {
       final path = join(
         // In this example, store the picture in the temp directory. Find
         // the temp directory using the `path_provider` plugin.
-        (await getTemporaryDirectory()).path,
-      '${dateFormat.toString()}-PPTIK.png',
+        (await getExternalStorageDirectory()).path,
+        '${dateFormat.toString()}-PPTIK.png',
       );
       print("eksplorer ${directory.path}");
       await controller.takePicture(path);
