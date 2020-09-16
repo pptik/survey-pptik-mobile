@@ -132,6 +132,18 @@ class HomeViewModel extends BaseModel {
     getLocation();
   }
 
+  bool returndata(bool value) {
+    return value;
+  }
+
+  void checkInternalStorage(String path) async {
+    if (await File(path).exists()) {
+      returndata(true);
+    } else {
+      returndata(false);
+    }
+  }
+
   void checkStatusPermission(Permission permission) async {
     PermissionStatus status = null;
     var _check = _permissionsService.checkStatus(permission);

@@ -8,15 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ListContentWidget extends StatelessWidget {
-  const ListContentWidget({
-    Key key,
-    @required this.date,
-    @required this.address,
-    @required this.content,
-    @required this.imageUrl,
-    @required this.name,
-    @required this.imageLocal,
-  }) : super(key: key);
+  const ListContentWidget(
+      {Key key,
+      @required this.date,
+      @required this.address,
+      @required this.content,
+      @required this.imageUrl,
+      @required this.name,
+      @required this.imageLocal,
+      this.checkImage})
+      : super(key: key);
 
   final String date;
   final String content;
@@ -24,34 +25,43 @@ class ListContentWidget extends StatelessWidget {
   final String name;
   final String imageUrl;
   final String imageLocal;
+  final String checkImage;
   Future<bool> checkimageAssets() async {
-    if (await rootBundle.loadString('assets/${imageLocal}') != null) {
+    if (await rootBundle.loadString('${imageLocal}') != null) {
       return true;
     } else {
       return false;
     }
   }
 
-  Widget _BuildImage(BuildContext context) {
-    print("data image $imageLocal");
-    if (File(imageLocal).exists() == true) {
-      print("object true");
-      return Image.file(
-        File(imageLocal),
-        fit: BoxFit.cover,
-        width: 250,
-        height: 250,
-      );
-    } else if (File(imageLocal).exists() == true ||
-        checkimageAssets() == null) {
-      CachedNetworkImage(
-        placeholder: (context, url) => CircularProgressIndicator(),
-        imageUrl: imageUrl,
-        fit: BoxFit.cover,
-        width: 250,
-        height: 250,
-      );
+  Future<bool> checkImageExternal() async {
+    if (await File(imageLocal).exists()) {
+      print("File exists");
+      return true;
+    } else {
+      print("File don't exists");
+      return false;
     }
+  }
+
+  Widget _BuildImage(BuildContext context) {
+    // print("data image $imageLocal");
+    // if (checkImageExternal != true) {
+    //   print("object true");
+
+    //   print("ini ada data local");
+    // } else {
+    //   CachedNetworkImage(
+    //     placeholder: (context, url) => CircularProgressIndicator(),
+    //     imageUrl: imageUrl,
+    //     fit: BoxFit.cover,
+    //     width: 250,
+    //     height: 250,
+    //   );
+
+    //   print("ini ambil dari internet");
+    //   print(imageUrl);
+    // }
   }
 
   @override
@@ -71,7 +81,14 @@ class ListContentWidget extends StatelessWidget {
         color: white,
         child: Row(
           children: <Widget>[
-            AspectRatio(aspectRatio: 5 / 6, child: _BuildImage(context)),
+            AspectRatio(
+                aspectRatio: 5 / 6,
+                child: Image.file(
+                  File(imageLocal),
+                  fit: BoxFit.cover,
+                  width: 250,
+                  height: 250,
+                )),
             Flexible(
               child: Container(
                 padding: EdgeInsets.only(

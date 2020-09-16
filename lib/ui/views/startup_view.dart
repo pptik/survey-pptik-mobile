@@ -20,7 +20,10 @@ class StartUpView extends StatelessWidget {
 
     return ViewModelBuilder<StartUpViewModel>.reactive(
       viewModelBuilder: () => StartUpViewModel(),
-      onModelReady: (model) => model.startTimer(),
+      onModelReady: (model) {
+        model.createFolder();
+        model.startTimer();
+      },
       builder: (context, model, child) => Scaffold(
         body: Center(
           child: Column(
