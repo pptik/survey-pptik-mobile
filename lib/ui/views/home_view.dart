@@ -44,8 +44,6 @@ class _HomeViewState extends State<HomeView> {
                   print('item selected $item');
                   if (item.contains('Profile')) {
                     model.goAnotherView(ProfileViewRoute);
-                  } else if (item.contains('Map View')) {
-                    model.goAnotherView(MapViewRoute);
                   } else {
                     model.signOut(context);
                   }
@@ -134,35 +132,6 @@ class _HomeViewState extends State<HomeView> {
                   model.goAnotherView(AbsenViewRoute);
                 },
                 heroTag: "AbsenViewRoute",
-              )
-            ]),
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Padding(
-                padding: EdgeInsets.only(left: 30.0),
-              ),
-              FloatingActionButton(
-                backgroundColor: Colors.green,
-                child: new Image.asset("assets/sayasehatemoticon.png"),
-                onPressed: () {
-                  model.sendCondition(context, "sehat");
-                },
-                heroTag: "SayaSehat",
-              ),
-              FloatingActionButton(
-                backgroundColor: Colors.red,
-                child: new Image.asset("assets/sayasakitemoticon.png"),
-                onPressed: () {
-                  model.sendCondition(context, "sakit");
-                },
-                heroTag: "SayaSakit",
-              ),
-              FloatingActionButton(
-                backgroundColor: Colors.yellow,
-                child: new Image.asset("assets/needahugemoticon.png"),
-                onPressed: () {
-                  model.sendCondition(context, "tolong");
-                },
-                heroTag: "SayaMintaTolong",
               )
             ]),
           ])),

@@ -38,7 +38,7 @@ class AbsenViewModel extends BaseModel {
   String address = '';
   String pathLocation = 'data/kehadiran/image/';
 
-  String kindOfReport = '#SayaSehat';
+  String kindOfReport = '#LaporanSurvey';
   TextEditingController commentController = TextEditingController();
   String carrierName = '';
   static const platform = const MethodChannel('jurnalamari.pptik.id/battery');
@@ -277,7 +277,7 @@ class AbsenViewModel extends BaseModel {
   void getValueRadio(int value) {
     switch (value) {
       case 1:
-        kindOfReport = '#SayaSehat';
+        kindOfReport = '#LaporanSurvey';
         break;
       case 2:
         kindOfReport = '#SayaSakit';

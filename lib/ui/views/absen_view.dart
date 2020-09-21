@@ -27,7 +27,7 @@ class _AbsenViewState extends State<AbsenView> {
   String _selectedValue;
 
   final List<RadioGroup> _programmingList = [
-    RadioGroup(index: 1, text: "#SayaSehat"),
+    RadioGroup(index: 1, text: "#LaporanRe"),
     RadioGroup(index: 2, text: "#SayaSakit"),
     RadioGroup(index: 3, text: "#SayaButuhPertolongan"),
   ];
@@ -132,32 +132,6 @@ class _AbsenViewState extends State<AbsenView> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      verticalSpaceMedium,
-                      Visibility(
-                          visible: model.isPathNull(),
-                          child: Container(
-                            child: Column(
-                              children: _programmingList
-                                  .map((programming) => RadioListTile(
-                                        title: Text(programming.text),
-                                        value: programming.index,
-                                        groupValue: _rgProgramming,
-                                        controlAffinity:
-                                            ListTileControlAffinity.trailing,
-                                        dense: true,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _rgProgramming = value;
-                                            _selectedValue = programming.text;
-                                          });
-
-                                          model.getValueRadio(_rgProgramming);
-                                          print(_selectedValue);
-                                        },
-                                      ))
-                                  .toList(),
-                            ),
-                          )),
                       verticalSpaceMedium,
                       Visibility(
                         visible: model.isPathNull(),
