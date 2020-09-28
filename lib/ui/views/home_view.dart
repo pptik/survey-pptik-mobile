@@ -101,6 +101,7 @@ class _HomeViewState extends State<HomeView> {
                                   name: '${model.absenData[idx].name}',
                                   imageLocal:
                                       '${model.absenData[idx].localImage}',
+                                  status: '${model.absenData[idx].status}',
                                 ),
                               ),
                             )

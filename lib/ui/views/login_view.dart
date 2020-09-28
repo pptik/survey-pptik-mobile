@@ -17,19 +17,18 @@ import 'package:flutter/services.dart';
 class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    
     // Lock Orientation Portait Only
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    
+
     return ViewModelBuilder<LoginViewModel>.reactive(
-      viewModelBuilder: () =>LoginViewModel(),
+      viewModelBuilder: () => LoginViewModel(),
+      onModelReady: (model) => model.checkPermission(context),
       builder: (context, model, child) => Scaffold(
         body: LoadingOverlay(
           isLoading: model.busy,
           child: SafeArea(
-
             child: SingleChildScrollView(
               child: Container(
                 child: Center(

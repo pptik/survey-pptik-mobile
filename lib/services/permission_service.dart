@@ -1,14 +1,13 @@
-
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionsService {
   Permission _permission;
-  PermissionStatus _permissionStatus = PermissionStatus.undetermined;
+  PermissionStatus _permissionStatus;
 
-  Future<PermissionStatus> checkStatus(Permission _permissionCheck)async {
-      final status = await _permissionCheck.status;
-      return status;
-
+  Future<void> checkStatus(Permission _permissionCheck) async {
+    var status = await _permissionCheck;
+    print('status = $status');
+    return status;
   }
 
   Future<void> requestPermission(Permission permission) async {

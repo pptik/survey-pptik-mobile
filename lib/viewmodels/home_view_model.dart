@@ -63,6 +63,13 @@ class HomeViewModel extends BaseModel {
       print(newfile.path.split("/").last.replaceAll("'", ""));
       File datasurevey =
           new File('$path' + newfile.path.split("/").last.replaceAll("'", ""));
+      String pathname = newfile.path
+          .split("/")
+          .last
+          .replaceAll("'", "")
+          .toString()
+          .split("-")[0];
+      print("check pathname $pathname");
       final text = json.decode(datasurevey.readAsStringSync());
       print(text["DESCRIPTION"]);
       absenData.add(AbsenData(
@@ -72,6 +79,7 @@ class HomeViewModel extends BaseModel {
           image: text["IMAGE"],
           name: text["NAME"],
           timestamp: int.parse(text["TIMESTAMP"]),
+          status: pathname == 'X' ? 'TERTUNDA' : 'TERKIRIM',
           localImage: text["LOCAL_IMAGE"]));
 
       // List<String> data_named = file[i].toString().split("/");
@@ -121,10 +129,6 @@ class HomeViewModel extends BaseModel {
 
   void onModelReady() {
     print('init the home');
-    checkStatusPermission(Permission.phone);
-    checkStatusPermission(Permission.camera);
-    checkStatusPermission(Permission.microphone);
-    checkStatusPermission(Permission.location);
     // getBatteryLevel();
     // initMobileNumberState();
     // getAllReport(pages);
@@ -144,15 +148,15 @@ class HomeViewModel extends BaseModel {
     }
   }
 
-  void checkStatusPermission(Permission permission) async {
-    PermissionStatus status = null;
-    var _check = _permissionsService.checkStatus(permission);
-    _check.then((value) => status = value);
+  // void checkStatusPermission(Permission permission) async {
+  //   PermissionStatus status = null;
+  //   var _check = _permissionsService.checkStatus(permission);
+  //   _check.then((value) => status = value);
 
-    if (!status.isGranted) {
-      _permissionsService.requestPermission(Permission.phone);
-    }
-  }
+  //   if (!status.isGranted) {
+  //     _permissionsService.requestPermission(Permission.phone);
+  //   }
+  // }
 
   void goAnotherView(String routeName) async {
     final data = await _navigationService.navigateTo(routeName);

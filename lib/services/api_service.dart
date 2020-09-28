@@ -17,10 +17,9 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as Path;
 
 class ApiService {
-
-  Future<ResponseJurusan> jurusan(String area, String district)async{
+  Future<ResponseJurusan> jurusan(String area, String district) async {
     final client = http.Client();
-    try{
+    try {
       final jurusanUrl = '${BASE_URL}companies/$area/$district';
       print(jurusanUrl);
       final response = await client.get(jurusanUrl);
@@ -30,20 +29,17 @@ class ApiService {
       }
 
       return jurusanData;
-
-    }catch(e){
+    } catch (e) {
       print('[Jurusan] error occurred $e');
       return null;
-
     }
   }
-  Future<ResponseAreas> areas()async{
+
+  Future<ResponseAreas> areas() async {
     final client = http.Client();
     try {
       final areasUrl = '${BASE_URL}areas';
-      final response = await client.get(
-        areasUrl
-      );
+      final response = await client.get(areasUrl);
       final userData = responseAreasFromJson(response.body);
       print(userData.code);
       if (userData.status == "failed" || response.statusCode != 200) {
@@ -56,6 +52,7 @@ class ApiService {
       return null;
     }
   }
+
   Future<ResponseRegister> register(
     String name,
     String email,
@@ -77,7 +74,7 @@ class ApiService {
       final registerUrl = Uri.parse('${BASE_URL}users/register');
       print(registerUrl);
       final request = http.MultipartRequest('POST', registerUrl)
-       ..fields['name'] = name
+        ..fields['name'] = name
         ..fields['email'] = email
         ..fields['password'] = password
         ..fields['position'] = position
@@ -105,7 +102,7 @@ class ApiService {
     try {
       final loginUrl = '${BASE_URL}users/login';
       print('login URL $loginUrl');
-      
+
       final response = await client.post(
         loginUrl,
         body: {
@@ -115,11 +112,6 @@ class ApiService {
       );
       print(response.body);
       final userData = loginDataFromJson(response.body);
-
-      if (userData.status != true || response.statusCode != 200) {
-        return null;
-      }
-
       return userData;
     } catch (e) {
       print('[Login] error occurred $e');

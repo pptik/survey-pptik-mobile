@@ -81,12 +81,12 @@ class SignUpViewModel extends BaseModel {
         } else if ((data != null) && (data.status == false)) {
           setBusy(false);
           // Other Error
-          _alertService.showError(
-              context, 'Error', data.message, _navigationService.pop);
+          _alertService.showError(context, 'Error ${data.code}', data.message,
+              _navigationService.pop);
         } else {
           setBusy(false);
           // Other Error
-          _alertService.showError(context, 'Error',
+          _alertService.showError(context, 'Error ${data.code}',
               'Something went wrong ${data.message}', _navigationService.pop);
         }
       } else {

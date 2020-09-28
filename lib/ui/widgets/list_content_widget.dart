@@ -8,16 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ListContentWidget extends StatelessWidget {
-  const ListContentWidget(
-      {Key key,
-      @required this.date,
-      @required this.address,
-      @required this.content,
-      @required this.imageUrl,
-      @required this.name,
-      @required this.imageLocal,
-      this.checkImage})
-      : super(key: key);
+  const ListContentWidget({
+    Key key,
+    @required this.date,
+    @required this.address,
+    @required this.content,
+    @required this.imageUrl,
+    @required this.name,
+    @required this.imageLocal,
+    this.checkImage,
+    @required this.status,
+  }) : super(key: key);
 
   final String date;
   final String content;
@@ -26,6 +27,7 @@ class ListContentWidget extends StatelessWidget {
   final String imageUrl;
   final String imageLocal;
   final String checkImage;
+  final String status;
   Future<bool> checkimageAssets() async {
     if (await rootBundle.loadString('${imageLocal}') != null) {
       return true;
@@ -124,6 +126,13 @@ class ListContentWidget extends StatelessWidget {
                     Flexible(
                       child: Text(
                         '$name',
+                        style: homeNameTextStyle,
+                      ),
+                    ),
+
+                    Flexible(
+                      child: Text(
+                        '$status',
                         style: homeNameTextStyle,
                       ),
                     ),
