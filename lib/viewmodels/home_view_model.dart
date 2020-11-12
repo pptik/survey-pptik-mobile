@@ -131,8 +131,8 @@ class HomeViewModel extends BaseModel {
     print('init the home');
     // getBatteryLevel();
     // initMobileNumberState();
-    // getAllReport(pages);
-    getReportInternal();
+     getAllReport(pages);
+//    getReportInternal();
     getLocation();
   }
 

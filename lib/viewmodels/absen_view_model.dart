@@ -136,6 +136,58 @@ class AbsenViewModel extends BaseModel {
     }
   }
 
+  void reSendMessages() async {
+    String directory;
+    List file = new List();
+    directory = (await getExternalStorageDirectory()).path;
+    String path = '$directory/report/';
+    file = Directory('$path').listSync();
+    for (int i = 0; i < file.length; i++) {
+      File newfile = new File(file[i].toString());
+      print(newfile.path.split("/").last.replaceAll("'", ""));
+      File datasurevey =
+          new File('$path' + newfile.path.split("/").last.replaceAll("'", ""));
+      String pathname = newfile.path
+          .split("/")
+          .last
+          .replaceAll("'", "")
+          .toString()
+          .split("-")[0];
+      if (pathname == 'X') {
+        final text = json.decode(datasurevey.readAsStringSync());
+        var absentData = SendAbsen(
+            address: text['ADDRESS'],
+            cmdType: text['CMD_TYPE'],
+            company: text['COMPANY'],
+            description: text['DESCRIPTION'],
+            guid: text['GUID'],
+            image: text['IMAGE'],
+            lat: text['LAT'],
+            long: text['LONG'],
+            localImage: text['LOCAL_IMAGE'],
+            msgType: text['MSG_TYPE'],
+            name: text['NAME'],
+            status: text['STATUS'],
+            timestamp: text['TIMESTAMP'],
+            unit: text['UNIT'],
+            signalCarrier: text['SIGNAL_CARRIER'],
+            signalStrength: text['SIGNAL_STRENGTH'],
+            signalType: text['SIGNAL_TYPE'],
+            reportType: text['REPORT_TYPE']);
+
+        bool isSuccess = await _ftpService.uploadFile(
+            File(text['LOCAL_IMAGE']), text['GUID'], text['TIMESTAMP']);
+        if (isSuccess) {
+          final sendAbsen = sendAbsenToJson(absentData);
+          print("tes");
+          print(sendAbsen);
+          print(absentData);
+          _rmqService.publish(sendAbsen);
+        }
+      }
+    }
+  }
+
   void sendMessages(BuildContext context) async {
     setBusy(true);
     final date = DateTime.now().millisecondsSinceEpoch.toString();
