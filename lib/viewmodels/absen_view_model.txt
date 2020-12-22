@@ -19,7 +19,7 @@ import 'package:surveypptik/services/rmq_service.dart';
 import 'package:surveypptik/services/storage_service.dart';
 import 'package:surveypptik/viewmodels/base_model.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:path/path.dart' as paths;
+
 class AbsenViewModel extends BaseModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final GeolocatorService _geolocatorService = locator<GeolocatorService>();
@@ -46,16 +46,6 @@ class AbsenViewModel extends BaseModel {
   List<SimCard> simCard = <SimCard>[];
   String mobileNumber = '';
 
-  String phoneNumber = '';
-  Future<void> getNumberPhone()async{
-    try{
-      final String result = await platform.invokeMethod('getNumber');
-      phoneNumber = result;
-      print("your phone $phoneNumber");
-    }catch(e){
-      phoneNumber = 'error available';
-    }
-  }
   Future<void> getBatteryLevel() async {
     String batteryLevel;
     try {
@@ -74,7 +64,6 @@ class AbsenViewModel extends BaseModel {
     openLocationSetting();
     initMobileNumberState();
     getBatteryLevel();
-    getNumberPhone();
     writeAttendance("some text");
   }
 
@@ -88,16 +77,12 @@ class AbsenViewModel extends BaseModel {
     try {
       mobileNumbers = await MobileNumber.mobileNumber;
       simCard = await MobileNumber.getSimCards;
-
+      mobileNumber = mobileNumbers;
       simCard.map((e) => carrierName = e.carrierName);
-      print(simCard.map((e) => e.number));
+      print(simCard.map((e) => e.carrierName));
       print("ini sim card ${simCard[0].carrierName}");
       carrierName = simCard[0].carrierName;
-      mobileNumber = simCard[0].number;
       print("ini carrier card ${carrierName}");
-      print("ini number card ${mobileNumber}");
-
-
     } on PlatformException catch (e) {
       debugPrint("Failed to get mobile number because of '${e.message}'");
     }
@@ -133,7 +118,6 @@ class AbsenViewModel extends BaseModel {
     // await intent.launch();
     initMobileNumberState();
     getBatteryLevel();
-    getNumberPhone();
     cek_data();
 
     await _locationService.checkService();
@@ -152,17 +136,6 @@ class AbsenViewModel extends BaseModel {
     }
   }
 
-  void renameFile(String path)async{
-    File file = new File(path);
-    String rename = path.replaceAll("X", "O");
-    print("before rename $path");
-    print("rename $rename");
-    String newPath = paths.join(path,rename);
-    // file.renameSync(newPath);
-    print("name file renamed $newPath");
-    File f = await File(file.path).copy(newPath);
-
-  }
   void reSendMessages() async {
     String directory;
     List file = new List();
@@ -181,7 +154,6 @@ class AbsenViewModel extends BaseModel {
           .toString()
           .split("-")[0];
       if (pathname == 'X') {
-        print("path name data ${newfile.path}");
         final text = json.decode(datasurevey.readAsStringSync());
         var absentData = SendAbsen(
             address: text['ADDRESS'],
@@ -208,8 +180,6 @@ class AbsenViewModel extends BaseModel {
         if (isSuccess) {
           final sendAbsen = sendAbsenToJson(absentData);
           print("tes");
-          print(newfile.path);
-          renameFile(newfile.path);
           print(sendAbsen);
           print(absentData);
           _rmqService.publish(sendAbsen);
@@ -220,7 +190,6 @@ class AbsenViewModel extends BaseModel {
 
   void sendMessages(BuildContext context) async {
     setBusy(true);
-    reSendMessages();
     final date = DateTime.now().millisecondsSinceEpoch.toString();
     final timestamp = date.substring(0, 10);
     final name = await _storageService.getString(K_NAME);
@@ -245,7 +214,7 @@ class AbsenViewModel extends BaseModel {
         unit: '$unit',
         signalCarrier: carrierName,
         signalStrength: int.parse(battery),
-        signalType: phoneNumber,
+        signalType: "Null",
         reportType: CODE_FOTO);
     try {
       final result = await InternetAddress.lookup('google.com');

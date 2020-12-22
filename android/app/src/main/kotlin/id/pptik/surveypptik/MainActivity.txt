@@ -32,14 +32,6 @@ class MainActivity: FlutterActivity() {
                 } else {
                     result.error("UNAVAILABLE", "Battery level not available.", null)
                 }
-//            }else if(call.method == 'getNumber'){
-//                val valueGetNumber = getNumberPhone()
-//
-//                if(valueGetNumber != null){
-//                    result.success(valueGetNumber)
-//                }else{
-//                    result.error("UNVAILABLE","Data not available",null)
-//                }
             } else {
                 result.notImplemented()
             }
@@ -47,13 +39,6 @@ class MainActivity: FlutterActivity() {
 
     }
 
-//    @SuppressLint("NewApi")
-//    private fun getNumberPhone(): String{
-//        val number : String
-//        val phoneMngr = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-//
-//        return number = phoneMngr.getLine1Number()
-//    }
     @SuppressLint("NewApi")
     private fun getSignalStrength(): Int{
         val sd : Int
