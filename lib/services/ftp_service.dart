@@ -18,7 +18,6 @@ class FtpService {
       client.disconnect();
       return false;
     }
-
     client.disconnect();
     return true;
   }

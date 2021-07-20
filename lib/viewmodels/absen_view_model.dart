@@ -20,6 +20,7 @@ import 'package:surveypptik/services/storage_service.dart';
 import 'package:surveypptik/viewmodels/base_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as paths;
+
 class AbsenViewModel extends BaseModel {
   final NavigationService _navigationService = locator<NavigationService>();
   final GeolocatorService _geolocatorService = locator<GeolocatorService>();
@@ -47,15 +48,16 @@ class AbsenViewModel extends BaseModel {
   String mobileNumber = '';
 
   String phoneNumber = '';
-  Future<void> getNumberPhone()async{
-    try{
+  Future<void> getNumberPhone() async {
+    try {
       final String result = await platform.invokeMethod('getNumber');
       phoneNumber = result;
       print("your phone $phoneNumber");
-    }catch(e){
+    } catch (e) {
       phoneNumber = 'error available';
     }
   }
+
   Future<void> getBatteryLevel() async {
     String batteryLevel;
     try {
@@ -70,6 +72,7 @@ class AbsenViewModel extends BaseModel {
   }
 
   void init_state() async {
+    print("awal mulai");
     setBusy(true);
     openLocationSetting();
     initMobileNumberState();
@@ -96,8 +99,6 @@ class AbsenViewModel extends BaseModel {
       mobileNumber = simCard[0].number;
       print("ini carrier card ${carrierName}");
       print("ini number card ${mobileNumber}");
-
-
     } on PlatformException catch (e) {
       debugPrint("Failed to get mobile number because of '${e.message}'");
     }
@@ -113,7 +114,6 @@ class AbsenViewModel extends BaseModel {
       var words = path.split('#');
       imagePath = words[0];
       imageName = words[1];
-
       await getLocation();
       print(imagePath);
     } on NoSuchMethodError catch (ne) {
@@ -152,18 +152,22 @@ class AbsenViewModel extends BaseModel {
     }
   }
 
-  void renameFile(String path)async{
+  void renameFile(String path) async {
     File file = new File(path);
     String rename = path.replaceAll("X", "O");
     print("before rename $path");
     print("rename $rename");
-    String newPath = paths.join(path,rename);
+    String newPath = paths.join(path, rename);
     // file.renameSync(newPath);
     print("name file renamed $newPath");
-    File f = await File(file.path).copy(newPath);
-
+    try {
+      File f = await File(file.path).copy(newPath);
+    } catch (e) {}
   }
-  void reSendMessages() async {
+
+  void reSendMessages(BuildContext context) async {
+    setBusy(true);
+    print("Kirim Ulang");
     String directory;
     List file = new List();
     directory = (await getExternalStorageDirectory()).path;
@@ -183,6 +187,8 @@ class AbsenViewModel extends BaseModel {
       if (pathname == 'X') {
         print("path name data ${newfile.path}");
         final text = json.decode(datasurevey.readAsStringSync());
+        print("datanya");
+        print(text);
         var absentData = SendAbsen(
             address: text['ADDRESS'],
             cmdType: text['CMD_TYPE'],
@@ -202,25 +208,38 @@ class AbsenViewModel extends BaseModel {
             signalStrength: text['SIGNAL_STRENGTH'],
             signalType: text['SIGNAL_TYPE'],
             reportType: text['REPORT_TYPE']);
-
         bool isSuccess = await _ftpService.uploadFile(
             File(text['LOCAL_IMAGE']), text['GUID'], text['TIMESTAMP']);
+        // print(text['LOCAL_IMAGE']), text['GUID'], text['TIMESTAMP']);
         if (isSuccess) {
+          print("Kirim ulang ke Rmq");
           final sendAbsen = sendAbsenToJson(absentData);
-          print("tes");
+          print(sendAbsen);
           print(newfile.path);
           renameFile(newfile.path);
           print(sendAbsen);
           print(absentData);
           _rmqService.publish(sendAbsen);
+          _alertService.showSuccess(
+            context,
+            'Success',
+            '',
+            () {
+              _navigationService.replaceTo(HomeViewRoute);
+            },
+          );
+        } else {
+          setBusy(false);
+          print("data nya tidak masuk");
         }
       }
     }
   }
 
   void sendMessages(BuildContext context) async {
+    print("Tombol di tekan");
     setBusy(true);
-    reSendMessages();
+    // reSendMessages();
     final date = DateTime.now().millisecondsSinceEpoch.toString();
     final timestamp = date.substring(0, 10);
     final name = await _storageService.getString(K_NAME);
@@ -267,13 +286,13 @@ class AbsenViewModel extends BaseModel {
         print(sendAbsen);
         print(absenData);
         _rmqService.publish(sendAbsen);
-        storeFile("O", sendAbsen);
+        // storeFile("O", sendAbsen);
         _alertService.showSuccess(
           context,
           'Success',
           '',
           () {
-            _navigationService.replaceTo(HomeViewRoute);
+            _navigationService.replaceTo(DashboardRoute);
           },
         );
       } else {
@@ -281,9 +300,9 @@ class AbsenViewModel extends BaseModel {
         _alertService.showWarning(
           context,
           'Warning',
-          'Connection to server problem, data temporarily will be saved om the device',
+          'Gagal Ftp,Connection to server problem, data temporarily will be saved om the device',
           () {
-            _navigationService.replaceTo(HomeViewRoute);
+            _navigationService.replaceTo(DashboardRoute);
           },
         );
         print("absen");
@@ -296,20 +315,18 @@ class AbsenViewModel extends BaseModel {
         'Warning',
         'Connection to server problem, data temporarily will be saved om the device',
         () {
-          _navigationService.replaceTo(HomeViewRoute);
+          _navigationService.replaceTo(DashboardRoute);
         },
       );
       print("absen");
       print(absenData.toJson());
       storeFile("X", sendAbsenToJson(absenData));
     }
-
     setBusy(false);
   }
 
   void absent(BuildContext context) async {
     setBusy(true);
-
     final company = await _storageService.getString(K_COMPANY);
     final guid = await _storageService.getString(K_GUID);
     final name = await _storageService.getString(K_NAME);
@@ -318,7 +335,6 @@ class AbsenViewModel extends BaseModel {
     final position = await _storageService.getString(K_POSITION);
     final unit = await _storageService.getString(K_UNIT);
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-
     final data = await _apiService.report(
         pathLocation + guid + '-' + imagePath,
         company,

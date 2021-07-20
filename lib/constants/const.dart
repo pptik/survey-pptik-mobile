@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 const BASE_URL = 'https://survey-api.pptik.id:5039/';
 
 const FTP_URL = "ftpf.jurnalamari.pptik.id";
@@ -40,3 +42,10 @@ const Q3 =
     'TINGGAL DI RUMAH DAN ISOLASI DIRI selama minimal 14 hari ke depan. Jika kemudian terdapat demam/batuk kurang dari 3 hari, tetap di rumah.  Jaga jarak minimal 2 meter (kurang lebih 6 langkah) dengan orang lain jika memungkinkan.';
 const Q4 =
     'TIDAK PERLU MENGHUBUNGI FASILITAS KESEHATAN.  Anda kemungkinan besar tidak memiliki gejala COVID-19. Walaupun demikian, tetap mawas diri, hindari keramaian, jaga diri dan keluarga dengan pola hidup bersih dan sehat. Sebisa mungkin tetaplah tinggal di rumah.Gunakan Aplikasi ini setiap hari.';
+const color_spacecadet = Color(0xff291C4B);
+const color_silverv = Color(0xffD76D2F);
+const color_white = Color(0xffEAF2E9);
+const color_mandarin = Color(0xff004d40);
+const color_independent = Color(0xff325074);
+const color_blue = Color(0xff004d40);
+const color_yellow = Color(0xffF3B14E);

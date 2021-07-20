@@ -54,7 +54,7 @@ class StartUpViewModel extends BaseModel {
     if (data == null) {
       _navigationService.replaceTo(LoginViewRoute);
     } else {
-      _navigationService.replaceTo(HomeViewRoute);
+      _navigationService.replaceTo(DashboardRoute);
     }
   }
 }

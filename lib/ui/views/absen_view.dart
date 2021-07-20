@@ -40,7 +40,7 @@ class _AbsenViewState extends State<AbsenView> {
 
     return ViewModelBuilder<AbsenViewModel>.reactive(
       viewModelBuilder: () => AbsenViewModel(),
-      onModelReady: (model){
+      onModelReady: (model) {
         model.openLocationSetting();
         model.getNumberPhone();
       },
@@ -176,6 +176,7 @@ class _AbsenViewState extends State<AbsenView> {
 //                            print('Button Pressed');
 //                            model.absent(context);
 //                            model.uploadFile();
+                            // model.reSendMessages(context);
                             model.sendMessages(context);
                           },
                           child: Text(

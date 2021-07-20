@@ -22,7 +22,7 @@ class _MapViewState extends State<MapView> {
       point: LatLng(51.5, -0.09),
       builder: (ctx) => Container(
         child: FlutterLogo(
-          colors: Colors.blue,
+          textColor: Colors.blue,
           key: ObjectKey(Colors.blue),
         ),
       ),
@@ -33,7 +33,7 @@ class _MapViewState extends State<MapView> {
       point: LatLng(53.3498, -6.2603),
       builder: (ctx) => Container(
         child: FlutterLogo(
-          colors: Colors.green,
+          textColor: Colors.green,
           key: ObjectKey(Colors.green),
         ),
       ),
@@ -44,7 +44,7 @@ class _MapViewState extends State<MapView> {
       point: LatLng(48.8566, 2.3522),
       builder: (ctx) => Container(
         child: FlutterLogo(
-          colors: Colors.purple,
+          textColor: Colors.purple,
           key: ObjectKey(Colors.purple),
         ),
       ),
@@ -66,7 +66,10 @@ class _MapViewState extends State<MapView> {
         height: 80.0,
         point: latlng,
         builder: (ctx) => Container(
-          child: Icon(Icons.accessibility_new,color: Color(0xff323d4f),),
+          child: Icon(
+            Icons.accessibility_new,
+            color: Color(0xff323d4f),
+          ),
         ),
       );
     }).toList();
@@ -139,7 +142,8 @@ class _MapViewState extends State<MapView> {
                   ),
                   layers: [
                     TileLayerOptions(
-                      tileProvider: CachedNetworkTileProvider(),
+                      // tileProvider: CachedNetworkTileProvider(),
+                      // tileProvider: 'hh',
                       maxZoom: 20.0,
                       urlTemplate:
                           'http://vectormap.pptik.id/styles/klokantech-basic/{z}/{x}/{y}.png',
@@ -168,7 +172,5 @@ class _MapViewState extends State<MapView> {
         ),
       ),
     );
-  
   }
-  
 }

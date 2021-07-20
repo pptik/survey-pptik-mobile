@@ -8,3 +8,5 @@ const String EditProfileRoute = 'EditProfileView';
 const String EditChangePwRoute = 'EditPasswordView';
 const String QuestionerViewRoute = 'QuestionerView';
 const String MapViewRoute = 'MapView';
+const String DashboardRoute = 'DashboardView';
+const String LocalReportViewRoute = 'LocalReportView';

@@ -204,29 +204,29 @@ class _QuestionerViewState extends State<QuestionerView> {
                               borderRadius: BorderRadius.circular(10.0),
                               child: Container(
                                 child: GestureDetector(
-                                  onTap: (){
+                                  onTap: () {
                                     print("OPen 123");
                                   },
                                   child: FlutterMap(
-                                  options: MapOptions(
-                                    center: LatLng(model.lat, model.lng),
-                                    zoom: 15.9,
-                                  ),
-                                  layers: [
-                                    TileLayerOptions(
-                                      tileProvider: CachedNetworkTileProvider(),
-                                      maxZoom: 20.0,
-                                      urlTemplate:
-                                          'http://vectormap.pptik.id/styles/klokantech-basic/{z}/{x}/{y}.png',
+                                    options: MapOptions(
+                                      center: LatLng(model.lat, model.lng),
+                                      zoom: 15.9,
                                     ),
-                                    MarkerLayerOptions(
+                                    layers: [
+                                      TileLayerOptions(
+                                        // tileProvider: CachedNetworkTileProvider(),
+                                        maxZoom: 20.0,
+                                        urlTemplate:
+                                            'http://vectormap.pptik.id/styles/klokantech-basic/{z}/{x}/{y}.png',
+                                      ),
+                                      MarkerLayerOptions(
 //                    maxClusterRadius: 120,
 //                    size: Size(40, 40),
 //                    anchor: AnchorPos.align(AnchorAlign.center),
 //                    fitBoundsOptions: FitBoundsOptions(
 //                      padding: EdgeInsets.all(50),
 //                    ),
-                                        // markers: model.markers,
+                                          // markers: model.markers,
 //                    polygonOptions: PolygonOptions(
 //                        borderColor: Colors.blueAccent,
 //                        color: Colors.black12,
@@ -234,9 +234,9 @@ class _QuestionerViewState extends State<QuestionerView> {
 //                    builder: (context, markers) {
 //
 //                    },
-                                        ),
-                                  ],
-                                ),
+                                          ),
+                                    ],
+                                  ),
                                 ),
                                 width: 90,
                                 height: 90,
@@ -250,7 +250,7 @@ class _QuestionerViewState extends State<QuestionerView> {
                   Container(
                     padding: fieldPadding,
                     width: screenWidthPercent(
-                      context,  
+                      context,
                       multipleBy: 0.9,
                     ),
                     height: fieldHeight,
@@ -260,8 +260,8 @@ class _QuestionerViewState extends State<QuestionerView> {
 //                            print('Button Pressed');
 //                            model.absent(context);
 //                            model.uploadFile();
-                       model.send_message(context);
-                      model.getBatteryLevel();
+                        model.send_message(context);
+                        model.getBatteryLevel();
                       },
                       child: Text(
                         'Report',
@@ -274,9 +274,7 @@ class _QuestionerViewState extends State<QuestionerView> {
                     child: Text(
                       "Message : ${model.battery}",
                       style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w800
-                      ),
+                          fontSize: 14.0, fontWeight: FontWeight.w800),
                     ),
                   )
                 ],

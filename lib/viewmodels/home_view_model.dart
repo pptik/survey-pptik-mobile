@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_number/mobile_number.dart';
 import 'package:mobile_number/sim_card.dart';
@@ -12,6 +13,7 @@ import 'package:surveypptik/models/absen_data.dart';
 import 'package:surveypptik/models/report_data.dart';
 import 'package:surveypptik/services/alert_service.dart';
 import 'package:surveypptik/services/api_service.dart';
+import 'package:surveypptik/services/ftp_service.dart';
 import 'package:surveypptik/services/geolocator_service.dart';
 import 'package:surveypptik/services/navigation_service.dart';
 import 'package:surveypptik/services/storage_service.dart';
@@ -22,6 +24,9 @@ import 'package:surveypptik/models/send_absen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+// import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:path/path.dart' as paths;
 
 class HomeViewModel extends BaseModel {
   final ApiService _apiService = locator<ApiService>();
@@ -31,6 +36,8 @@ class HomeViewModel extends BaseModel {
   final RMQService _rmqService = locator<RMQService>();
   final GeolocatorService _geolocatorService = locator<GeolocatorService>();
   final PermissionsService _permissionsService = locator<PermissionsService>();
+  final FtpService _ftpService = locator<FtpService>();
+  // final RMQService _rmqService = locator<RMQService>();
 
   bool isLoading = false;
   int totalPages = 0;
@@ -44,6 +51,8 @@ class HomeViewModel extends BaseModel {
   double lat = 0.0;
   double lng = 0.0;
   String address = '';
+  String network = '';
+  bool status = false;
 
   String pathLocation = 'data/kehadiran/image/';
   String carrierName = '';
@@ -81,6 +90,9 @@ class HomeViewModel extends BaseModel {
           timestamp: int.parse(text["TIMESTAMP"]),
           status: pathname == 'X' ? 'TERTUNDA' : 'TERKIRIM',
           localImage: text["LOCAL_IMAGE"]));
+      // if(pathname=='X'){
+      //   // status: pathname == 'X' ? 'TERTUNDA' : 'TERKIRIM'
+      // }
 
       // List<String> data_named = file[i].toString().split("/");
       // print(data_named[i]);
@@ -97,7 +109,6 @@ class HomeViewModel extends BaseModel {
     } on PlatformException catch (e) {
       batteryLevel = "-1";
     }
-
     battery = batteryLevel;
     print(battery);
   }
@@ -132,8 +143,16 @@ class HomeViewModel extends BaseModel {
     // getBatteryLevel();
     // initMobileNumberState();
 //     getAllReport(pages);
-    getReportInternal();
+    // getReportInternal();
     getLocation();
+    getAllReport(1);
+  }
+
+  void onModeLocal() {
+    print("Ini list Local");
+    getLocation();
+    getReportInternal();
+    // getAllReport(1);
   }
 
   bool returndata(bool value) {
@@ -187,17 +206,21 @@ class HomeViewModel extends BaseModel {
     final report = await getExternalStorageDirectory();
     print('${report.path}/report');
     data = await _apiService.getReport(company, guid, page);
+    print('ini datanya');
+    print(data);
     // totalPages = data.numberOfPages;
     data.data.forEach(
       (val) {
         print("image date ${val.timestamp}");
         print("image date ${val.description}");
+        print("ini image ${val.image}");
         absenData.add(AbsenData(
             address: val.address,
             description: val.description,
             id: val.id,
             image: val.image,
             name: val.name,
+            status: 'Terkirim',
             timestamp: val.timestamp,
             localImage: val.localImage));
       },
@@ -208,7 +231,6 @@ class HomeViewModel extends BaseModel {
 
   void loadMoreData(int page) async {
     isLoading = true;
-
     if (page <= totalPages) {
       print('load more with page $page');
       final company = await _storageService.getString(K_COMPANY);
@@ -222,11 +244,11 @@ class HomeViewModel extends BaseModel {
               id: val.id,
               image: val.image,
               name: val.name,
+              status: 'Terkirim',
               timestamp: val.timestamp,
               localImage: val.localImage));
         },
       );
-
       isLoading = false;
       setBusy(false);
     } else {
@@ -394,5 +416,189 @@ class HomeViewModel extends BaseModel {
     } catch (e) {
       setBusy(false);
     }
+  }
+
+  void reSendMessages(BuildContext context) async {
+    // setBusy(true);
+    // Dialogs.showLoadingDialog(context, _keyLoader);
+    // EasyLoading();
+    final ProgressDialog pr = ProgressDialog(context);
+    pr.style(
+        message: 'Sedang Mengirim Ulang..........',
+        borderRadius: 5.0,
+        backgroundColor: color_blue,
+        progressWidget: CircularProgressIndicator(),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+
+        // TextDirection: TextDirection.LTR,
+        maxProgress: 200.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 10.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
+    pr.show();
+    print("Kirim Ulang");
+    String directory;
+    List file = new List();
+    directory = (await getExternalStorageDirectory()).path;
+    String path = '$directory/report/';
+    file = Directory('$path').listSync();
+    if (file.isEmpty) {
+      print('coba kosong');
+      // setBusy(false);
+      pr.hide();
+      _alertService.showError(
+        context,
+        'Warning',
+        'Anda Belum Memiliki Laporan yang belum terkirim !!!',
+        () {
+          _navigationService.replaceTo(DashboardRoute);
+        },
+      );
+    } else {
+      print("mulai kirim");
+      // List file = new List();
+      // directory = (await getExternalStorageDirectory()).path;
+      // String path = '$directory/report/';
+      // file = Directory('$path').listSync();
+
+      for (int i = 0; i < file.length; i++) {
+        // setBusy(true);
+        print("ini hasil loop ${i}");
+        print(file);
+        File newfile = new File(file[i].toString());
+        print(newfile.path.split("/").last.replaceAll("'", ""));
+        File datasurevey = new File(
+            '$path' + newfile.path.split("/").last.replaceAll("'", ""));
+        String pathname = newfile.path
+            .split("/")
+            .last
+            .replaceAll("'", "")
+            .toString()
+            .split("-")[0];
+        if (pathname == 'X') {
+          print("path name data ${newfile.path}");
+          final text = json.decode(datasurevey.readAsStringSync());
+          print("datanya");
+          print(text);
+          var absentData = SendAbsen(
+              address: text['ADDRESS'],
+              cmdType: text['CMD_TYPE'],
+              company: text['COMPANY'],
+              description: text['DESCRIPTION'],
+              guid: text['GUID'],
+              image: text['IMAGE'],
+              lat: text['LAT'],
+              long: text['LONG'],
+              localImage: text['LOCAL_IMAGE'],
+              msgType: text['MSG_TYPE'],
+              name: text['NAME'],
+              status: text['STATUS'],
+              timestamp: text['TIMESTAMP'],
+              unit: text['UNIT'],
+              signalCarrier: text['SIGNAL_CARRIER'],
+              signalStrength: text['SIGNAL_STRENGTH'],
+              signalType: text['SIGNAL_TYPE'],
+              reportType: text['REPORT_TYPE']);
+          try {
+            final result = await InternetAddress.lookup('google.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              print('connected');
+              network = 'connected';
+            }
+          } on SocketException catch (_) {
+            print('not connected');
+            network = 'disconnect';
+          }
+          if (network == 'connected') {
+            bool isSuccess = await _ftpService.uploadFile(
+                File(text['LOCAL_IMAGE']), text['GUID'], text['TIMESTAMP']);
+            // print(text['LOCAL_IMAGE']), text['GUID'], text['TIMESTAMP']);
+            if (isSuccess) {
+              print("Kirim ulang ke Rmq");
+              final sendAbsen = sendAbsenToJson(absentData);
+              print(sendAbsen);
+              print(newfile.path);
+              renameFile(newfile.path);
+              print(sendAbsen);
+              print(absentData);
+              _rmqService.publish(sendAbsen);
+              status = true;
+            } else {
+              pr.hide();
+              _alertService.showError(
+                context,
+                'Warning',
+                'No Internet',
+                () {
+                  _navigationService.replaceTo(DashboardRoute);
+                  // deleteFile(path);
+                },
+              );
+            }
+          } else {
+            pr.hide();
+            _alertService.showError(
+              context,
+              'Warning',
+              'No Internet',
+              () {
+                _navigationService.replaceTo(DashboardRoute);
+                // deleteFile(path);
+              },
+            );
+            // setBusy(false);
+            // print("data nya tidak masuk");
+          }
+        }
+      }
+      print(status);
+      if (status) {
+        pr.hide();
+        _alertService.showSuccess(
+          context,
+          'Success',
+          'Laporan Survey Berhasil Di kirim ',
+          () {
+            _navigationService.replaceTo(DashboardRoute);
+            deleteFile(path);
+          },
+        );
+      } else if (network == 'disconnect') {
+        pr.hide();
+        _alertService.showError(
+          context,
+          'Warning.....',
+          'Tidak ada Koneksi Internet.....',
+          () {
+            _navigationService.replaceTo(DashboardRoute);
+            // deleteFile(path);
+          },
+        );
+      }
+    }
+
+    // setBusy(false);
+  }
+// }
+
+  void deleteFile(String Path) {
+    final dir = Directory(Path);
+    dir.deleteSync(recursive: true);
+  }
+
+  void renameFile(String path) async {
+    File file = new File(path);
+    String rename = path.replaceAll("X", "O");
+    print("before rename $path");
+    print("rename $rename");
+    String newPath = paths.join(path, rename);
+    // file.renameSync(newPath);
+    print("name file renamed $newPath");
+    try {
+      File f = await File(file.path).copy(newPath);
+    } catch (e) {}
   }
 }

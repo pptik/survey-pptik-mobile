@@ -2,11 +2,13 @@ import 'package:surveypptik/constants/route_name.dart';
 import 'package:surveypptik/ui/views/absen_view.dart';
 import 'package:surveypptik/ui/views/camera_view.dart';
 import 'package:surveypptik/ui/views/change_pw_view.dart';
+import 'package:surveypptik/ui/views/dashboard_view.dart';
 import 'package:surveypptik/ui/views/edit_profile.dart';
 import 'package:surveypptik/ui/views/home_view.dart';
 import 'package:surveypptik/ui/views/login_view.dart';
 import 'package:surveypptik/ui/views/maps_view.dart';
 import 'package:surveypptik/ui/views/profile_view.dart';
+import 'package:surveypptik/ui/views/reportlocal_view.dart';
 import 'package:surveypptik/ui/views/sign_up_view.dart';
 import 'package:surveypptik/ui/views/questioner_view.dart';
 import 'package:flutter/material.dart';
@@ -60,8 +62,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case MapViewRoute:
       return _pageRoute(
-        routeName : settings.name,
+        routeName: settings.name,
         viewToShow: MapView(),
+      );
+    case DashboardRoute:
+      return _pageRoute(
+        routeName: settings.name,
+        viewToShow: Dashboard(),
+      );
+    case LocalReportViewRoute:
+      return _pageRoute(
+        routeName: settings.name,
+        viewToShow: LocalReportView(),
       );
 
     default:

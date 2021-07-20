@@ -54,7 +54,7 @@ class LoginViewModel extends BaseModel {
         await _storageService.setString(K_GUID, data.data.guid);
         await _storageService.setString(K_IMAGE, data.data.image);
         // navigate to home
-        _navigationService.replaceTo(HomeViewRoute);
+        _navigationService.replaceTo(DashboardRoute);
       } else {
         _alertService.showError(context, 'Error ${data.code}',
             '${data.message}', _navigationService.pop);
@@ -63,7 +63,6 @@ class LoginViewModel extends BaseModel {
       _alertService.showWarning(context, 'Warning', 'Please fill in all fields',
           _navigationService.pop);
     }
-
     setBusy(false);
   }
 }

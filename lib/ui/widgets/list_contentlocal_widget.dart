@@ -7,8 +7,8 @@ import 'package:surveypptik/ui/shared/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class ListContentWidget extends StatelessWidget {
-  const ListContentWidget({
+class ListContentLocalWidget extends StatelessWidget {
+  const ListContentLocalWidget({
     Key key,
     @required this.date,
     @required this.address,
@@ -86,21 +86,20 @@ class ListContentWidget extends StatelessWidget {
         child: Row(
           children: <Widget>[
             AspectRatio(
-              aspectRatio: 5 / 6,
-
-              // child: Image.file(
-              //   File(imageUrl),
-              //   fit: BoxFit.cover,
-              //   width: 250,
-              //   height: 250,
-              // )
-              child: Image.network(
-                imageUrl,
-                // fit: BoxFit.cover,
-                width: 250,
-                height: 250,
-              ),
-            ),
+                aspectRatio: 5 / 6,
+                child: Image.file(
+                  File(imageLocal),
+                  fit: BoxFit.cover,
+                  width: 250,
+                  height: 250,
+                )
+                // child: Image.network(
+                //   imageUrl,
+                //   // fit: BoxFit.cover,
+                //   width: 250,
+                //   height: 250,
+                // ),
+                ),
             Flexible(
               child: Container(
                 padding: EdgeInsets.only(
