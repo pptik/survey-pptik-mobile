@@ -39,7 +39,7 @@ class LoginView extends StatelessWidget {
                         'Survey PPTIK',
                         style: titleTextStyle,
                       ),
-                      verticalSpaceMassive,
+                      verticalSpaceMassiveSignup,
                       TextFieldWidget(
                         hintText: 'Email',
                         icon: Icons.email,

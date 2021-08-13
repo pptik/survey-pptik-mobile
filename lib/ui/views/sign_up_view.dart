@@ -49,12 +49,12 @@ class _SignUpViewState extends State<SignUpView> {
                 child: Center(
                   child: Column(
                     children: <Widget>[
-                      verticalSpaceMassive,
+                      verticalSpaceMassiveSignup,
                       Text(
                         'Sign Up',
                         style: titleTextStyle,
                       ),
-                      verticalSpaceMassive,
+                      verticalSpaceMassiveSignup,
                       TextFieldWidget(
                         hintText: 'Name',
                         icon: Icons.person,
@@ -169,11 +169,12 @@ class _SignUpViewState extends State<SignUpView> {
                                     style: textButtonTextStyle,
                                   ),
                                 )
-                              : FittedBox(
-                                  child: Image.file(File(model.imagePath)),
-                                  fit: BoxFit.fitWidth,
+                              :Image.file(File(model.imagePath),fit: BoxFit.cover,),
+                          // FittedBox(
+                          //         child: Image.file(File(model.imagePath)),
+                          //         fit: BoxFit.fitWidth,
                                 ),
-                        ),
+                        // ),
                       ),
                       verticalSpaceMedium,
                       Row(
@@ -197,7 +198,8 @@ class _SignUpViewState extends State<SignUpView> {
                           )
                         ],
                       ),
-                      verticalSpaceLarge,
+                      // verticalSpaceLarge,
+                      verticalSpaceMassiveSignup,
                       ButtonWidget(
                         title: 'Sign Up',
                         onPressedFunction: () {

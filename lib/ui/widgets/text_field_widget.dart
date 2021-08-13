@@ -38,6 +38,7 @@ class TextFieldWidget extends StatelessWidget {
             color: Colors.white,
           ),
           hintText: '$hintText',
+          labelText: '$hintText'
         ),
       ),
     );
