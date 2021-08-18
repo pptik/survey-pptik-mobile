@@ -90,10 +90,12 @@ class _AbsenViewState extends State<AbsenView> {
                                     style: textButtonTextStyle,
                                   ),
                                 )
-                              : FittedBox(
-                                  child: Image.file(File(model.imagePath)),
-                                  fit: BoxFit.fitWidth,
-                                ),
+                              :Image.file(File(model.imagePath),fit: BoxFit.cover,)
+                              // // : FittedBox(
+                              // //     child: Image.file(File(model.imagePath)),
+                              // //     fit: BoxFit.fitWidth,
+                              //
+                              //   ),
                         ),
                       ),
                       verticalSpaceMedium,

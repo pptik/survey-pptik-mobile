@@ -97,7 +97,10 @@ class _HomeViewState extends State<LocalReportView> {
                                 ),
                                 itemCount: model.absenData.length,
                                 itemBuilder: (ctx, idx) =>
+                                  // GestureDetector()
+
                                     ListContentLocalWidget(
+
                                   content:
                                       '${model.absenData[idx].description}',
                                   date:
@@ -113,10 +116,11 @@ class _HomeViewState extends State<LocalReportView> {
                               ),
                             )
                           : Center(
-                              child: Text(
-                                'None',
-                                style: profileTextStyle,
-                              ),
+                              child:CircularProgressIndicator()
+                              // Text(
+                              //   'None',
+                              //   style: profileTextStyle,
+                              // ),
                             ),
                     ),
                     Container(
@@ -154,44 +158,47 @@ class _HomeViewState extends State<LocalReportView> {
             ),
           ),
           floatingActionButton: Stack(children: [
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              // FloatingActionButton(
-              //   backgroundColor: Colors.brown,
-              //   child: Icon(Icons.send_to_mobile),
-              //   onPressed: () {
-              //     model.setBusy(false);
-              //     model.reSendMessages(context);
-              //     // model.goAnotherView(AbsenViewRoute);
-              //   },
-              //   heroTag: "AbsenViewRoute",
-              // ),
-              // Text('Resend'),
-              Container(
-                // padding: EdgeInsets.all(10),
-
-                margin: const EdgeInsets.only(
-                    top: 10, right: 10, left: 10, bottom: 10),
-                height: 50,
-                width: 300,
-                decoration: BoxDecoration(
-                    color: Colors.brown,
-                    borderRadius: BorderRadius.circular(10)),
-                child: FlatButton(
-                  onPressed: () {
-                    // EasyLoading.show(status: 'loading...');
-                    // EasyLoading.init();
-                    // EasyLoading.show(status: 'loading...');
-                    model.reSendMessages(context);
-                    // Submit(context);
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (_) => HomePage()));
-                  },
-                  child: Text(
-                    'RESEND',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  ),
-                ),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              FloatingActionButton(
+                backgroundColor: Colors.brown,
+                child: Icon(Icons.send_to_mobile_rounded),
+                onPressed: () {
+                  model.setBusy(false);
+                  model.reSendMessages(context);
+                  // model.goAnotherView(AbsenViewRoute);
+                },
+                heroTag: "AbsenViewRoute",
               ),
+              // Text('Resend'),
+              // Container(
+              //   // padding: EdgeInsets.all(10),
+              //
+              //   // margin: const EdgeInsets.only(
+              //   //     top: 10, right: 10, left: 10, bottom: 10),
+              //   // height: 50,
+              //   // width: 300,
+              //   // c: TextAlign.center,
+              //   margin: EdgeInsets.all(20),
+              //   decoration: BoxDecoration(
+              //       color: Colors.brown,
+              //       borderRadius: BorderRadius.circular(10)),
+              //   child: FlatButton(
+              //     onPressed: () {
+              //       // EasyLoading.show(status: 'loading...');
+              //       // EasyLoading.init();
+              //       // EasyLoading.show(status: 'loading...');
+              //       model.reSendMessages(context);
+              //       // Submit(context);
+              //       // Navigator.push(
+              //       //     context, MaterialPageRoute(builder: (_) => HomePage()));
+              //     },
+              //     child: Text(
+              //       'RESEND',
+              //       textAlign: TextAlign.center,
+              //       style: TextStyle(color: Colors.white, fontSize: 15,),
+              //     ),
+              //   ),
+              // ),
             ]),
           ])),
     );

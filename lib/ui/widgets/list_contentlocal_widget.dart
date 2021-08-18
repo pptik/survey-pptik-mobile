@@ -6,6 +6,7 @@ import 'package:surveypptik/ui/shared/shared_style.dart';
 import 'package:surveypptik/ui/shared/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:surveypptik/ui/widgets/button_widget.dart';
 
 class ListContentLocalWidget extends StatelessWidget {
   const ListContentLocalWidget({
@@ -145,6 +146,17 @@ class ListContentLocalWidget extends StatelessWidget {
                         style: homeNameTextStyle,
                       ),
                     ),
+                    //   SizedBox(height: 10,),
+                    // Flexible(child:ButtonWidget(
+                    //   title:'Resend',
+                    //   onPressedFunction: () {
+                    //     // model.loginAccount(context);
+                    //   },
+                    //
+                    // ),
+                    //
+                    // ),
+                    // SizedBox(height: 10,),
                   ],
                 ),
               ),

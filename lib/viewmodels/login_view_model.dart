@@ -40,8 +40,9 @@ class LoginViewModel extends BaseModel {
     if (emailController.text.length > 0 && passwordController.text.length > 0) {
       final data = await _apiService.newLogin(
           emailController.text, passwordController.text);
-
-      if (data != null || data.code == 200) {
+      // print('ini respon:${data}');
+      // print('ini code:${data.code}');
+      if (data != null) {
         // login success
         // save data
         await _storageService.setString(K_PHONE_NUMBER, data.data.phoneNumber);
@@ -55,9 +56,13 @@ class LoginViewModel extends BaseModel {
         await _storageService.setString(K_IMAGE, data.data.image);
         // navigate to home
         _navigationService.replaceTo(DashboardRoute);
+      // }else if (data.code==401){
+      //   setBusy(false);
+      //   _alertService.showError(context, 'Error ${data.code}',
+      //       '${data.message}', _navigationService.pop);
       } else {
-        _alertService.showError(context, 'Error ${data.code}',
-            '${data.message}', _navigationService.pop);
+        _alertService.showError(context, 'Error',
+            'Harap Masukan Email dan Password Yang Benar', _navigationService.pop);
       }
     } else {
       _alertService.showWarning(context, 'Warning', 'Please fill in all fields',

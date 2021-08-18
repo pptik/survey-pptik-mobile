@@ -112,6 +112,9 @@ class ApiService {
       );
       print(response.body);
       final userData = loginDataFromJson(response.body);
+      if (userData.status != true || response.statusCode != 200) {
+        return null;
+      }
       return userData;
     } catch (e) {
       print('[Login] error occurred $e');

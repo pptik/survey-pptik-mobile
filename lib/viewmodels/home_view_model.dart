@@ -97,8 +97,8 @@ class HomeViewModel extends BaseModel {
       // List<String> data_named = file[i].toString().split("/");
       // print(data_named[i]);
     }
-    print(file.length);
-    print(directory);
+    // print(file.length);
+    // print(directory);
   }
 
   Future<void> getBatteryLevel() async {
@@ -140,9 +140,9 @@ class HomeViewModel extends BaseModel {
 
   void onModelReady() {
     print('init the home');
-    // getBatteryLevel();
-    // initMobileNumberState();
-//     getAllReport(pages);
+    getBatteryLevel();
+    initMobileNumberState();
+    // getAllReport(pages);
     // getReportInternal();
     getLocation();
     getAllReport(1);
@@ -523,7 +523,8 @@ class HomeViewModel extends BaseModel {
               print(newfile.path);
               renameFile(newfile.path);
               print(sendAbsen);
-              print(absentData);
+              // print(absentData);
+              _rmqService.publish(sendAbsen);
               _rmqService.publish(sendAbsen);
               status = true;
             } else {
@@ -531,7 +532,7 @@ class HomeViewModel extends BaseModel {
               _alertService.showError(
                 context,
                 'Warning',
-                'No Internet',
+                'No Internet 😥',
                 () {
                   _navigationService.replaceTo(DashboardRoute);
                   // deleteFile(path);
@@ -543,7 +544,7 @@ class HomeViewModel extends BaseModel {
             _alertService.showError(
               context,
               'Warning',
-              'No Internet',
+              'No Internet 😥',
               () {
                 _navigationService.replaceTo(DashboardRoute);
                 // deleteFile(path);
@@ -560,7 +561,7 @@ class HomeViewModel extends BaseModel {
         _alertService.showSuccess(
           context,
           'Success',
-          'Laporan Survey Berhasil Di kirim ',
+          'Laporan Survey Berhasil Di kirim 🙂 ',
           () {
             _navigationService.replaceTo(DashboardRoute);
             deleteFile(path);
@@ -571,7 +572,7 @@ class HomeViewModel extends BaseModel {
         _alertService.showError(
           context,
           'Warning.....',
-          'Tidak ada Koneksi Internet.....',
+          'Tidak ada Koneksi Internet.....😓',
           () {
             _navigationService.replaceTo(DashboardRoute);
             // deleteFile(path);

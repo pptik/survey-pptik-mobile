@@ -108,10 +108,11 @@ class _HomeViewState extends State<HomeView> {
                               ),
                             )
                           : Center(
-                              child: Text(
-                                'None',
-                                style: profileTextStyle,
-                              ),
+                              child: CircularProgressIndicator()
+                              // Text(
+                              //   'None',
+                              //   style: profileTextStyle,
+                              // ),
                             ),
                     ),
                     Container(

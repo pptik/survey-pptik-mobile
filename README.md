@@ -1,0 +1,1 @@
+flutter build appbundle --target-platform android-arm,android-arm64 --build-name="1.0.0" --build-number=5

@@ -177,7 +177,7 @@ class AbsenViewModel extends BaseModel {
       File newfile = new File(file[i].toString());
       print(newfile.path.split("/").last.replaceAll("'", ""));
       File datasurevey =
-          new File('$path' + newfile.path.split("/").last.replaceAll("'", ""));
+      new File('$path' + newfile.path.split("/").last.replaceAll("'", ""));
       String pathname = newfile.path
           .split("/")
           .last
@@ -214,17 +214,18 @@ class AbsenViewModel extends BaseModel {
         if (isSuccess) {
           print("Kirim ulang ke Rmq");
           final sendAbsen = sendAbsenToJson(absentData);
-          print(sendAbsen);
-          print(newfile.path);
-          renameFile(newfile.path);
-          print(sendAbsen);
-          print(absentData);
+          // print(sendAbsen);
+          // print(newfile.path);
+          // renameFile(newfile.path);
+          // print(sendAbsen);
+          // print(absentData);
           _rmqService.publish(sendAbsen);
+          // _rmqService.publish(sendAbsen);
           _alertService.showSuccess(
             context,
             'Success',
-            '',
-            () {
+            'Berhasil Mengirim Data',
+                () {
               _navigationService.replaceTo(HomeViewRoute);
             },
           );
@@ -279,19 +280,20 @@ class AbsenViewModel extends BaseModel {
 
     if (network == 'connected') {
       bool isSuccess =
-          await _ftpService.uploadFile(File(imagePath), guid, timestamp);
+      await _ftpService.uploadFile(File(imagePath), guid, timestamp);
       if (isSuccess) {
         final sendAbsen = sendAbsenToJson(absenData);
         print("tes");
         print(sendAbsen);
-        print(absenData);
+        // print(absenData);
+        _rmqService.publish(sendAbsen);
         _rmqService.publish(sendAbsen);
         // storeFile("O", sendAbsen);
         _alertService.showSuccess(
           context,
           'Success',
-          '',
-          () {
+          'Data Survey Berhasil Di kirim 🙂',
+              () {
             _navigationService.replaceTo(DashboardRoute);
           },
         );
@@ -300,8 +302,8 @@ class AbsenViewModel extends BaseModel {
         _alertService.showWarning(
           context,
           'Warning',
-          'Gagal Ftp,Connection to server problem, data temporarily will be saved om the device',
-          () {
+          'Gagal Ftp 😭,Connection to server problem, data temporarily will be saved om the device',
+              () {
             _navigationService.replaceTo(DashboardRoute);
           },
         );
@@ -313,8 +315,8 @@ class AbsenViewModel extends BaseModel {
       _alertService.showWarning(
         context,
         'Warning',
-        'Connection to server problem, data temporarily will be saved om the device',
-        () {
+        'Connection to server problem 😭, data temporarily will be saved om the device',
+            () {
           _navigationService.replaceTo(DashboardRoute);
         },
       );
@@ -355,7 +357,7 @@ class AbsenViewModel extends BaseModel {
         context,
         'Succes',
         '',
-        () {
+            () {
           _navigationService.pop();
         },
       );

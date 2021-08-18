@@ -18,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "jurnalamari.pptik.id/battery"
+//    val signalManager
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -26,7 +27,6 @@ class MainActivity: FlutterActivity() {
             call, result ->
             if (call.method == "getBatteryLevel") {
                 val batteryLevel = getSignalStrength()
-
                 if (batteryLevel != null) {
                     result.success(batteryLevel)
                 } else {
@@ -54,21 +54,46 @@ class MainActivity: FlutterActivity() {
 //
 //        return number = phoneMngr.getLine1Number()
 //    }
+
     @SuppressLint("NewApi")
     private fun getSignalStrength(): Int{
         val sd : Int
-        val signalManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+//        try {
+//        val TelephonyManager=android.telephony.TelephonyManager
+            val signalManager = getSystemService(Context.TELEPHONY_SERVICE)
 
+                    as TelephonyManager
+//        }finally {
+//
+//        }
+
+//       try {
         if (VERSION.SDK_INT >= VERSION_CODES.P) {
+
             sd = signalManager.signalStrength!!.gsmSignalStrength
             return sd
-        }else{
+        }else if (VERSION.SDK_INT >= VERSION_CODES.M) {
             sd = signalManager.signalStrength!!.gsmSignalStrength
+            return sd
+        }else if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            sd = signalManager.signalStrength!!.gsmSignalStrength
+            return sd
+        }else if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                sd = signalManager.signalStrength!!.gsmSignalStrength
+                return sd
+        }
 
+        else{
+            sd = signalManager.signalStrength!!.gsmSignalStrength
             return sd
         }
 
         return 0
+//    }finally {
+//
+//    }
+
+
     }
     private fun getBatteryLevel(): Int {
         val batteryLevel: Int
