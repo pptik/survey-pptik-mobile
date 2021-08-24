@@ -43,6 +43,7 @@ class _AbsenViewState extends State<AbsenView> {
       onModelReady: (model) {
         model.openLocationSetting();
         model.getNumberPhone();
+        // model.checknetworkstatus(context);
       },
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
@@ -179,10 +180,11 @@ class _AbsenViewState extends State<AbsenView> {
 //                            model.absent(context);
 //                            model.uploadFile();
                             // model.reSendMessages(context);
-                            model.sendMessages(context);
+                            // model.sendMessages(context);
+                            model.checknetworkstatus(context);
                           },
                           child: Text(
-                            'Report',
+                            'Send Survey',
                             style: textButtonTextStyle,
                           ),
                         ),

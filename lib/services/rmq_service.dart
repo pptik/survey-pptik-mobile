@@ -14,7 +14,7 @@ class RMQService {
       virtualHost: vHostQueue,
     );
     Client client = new Client(settings: settings);
-    print("kirim data");
+    // print("kirim data");
     client.channel().then((Channel channel) {
       return channel.queue(queues, durable: true);
     }).then((Queue queue) {

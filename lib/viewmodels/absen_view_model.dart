@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+// import 'dart:js';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_reachability/flutter_reachability.dart';
 import 'package:mobile_number/mobile_number.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+// import 'package:connectivity/connectivity.dart';
 import 'package:surveypptik/constants/const.dart';
 import 'package:surveypptik/constants/route_name.dart';
 import 'package:surveypptik/locator.dart';
@@ -31,7 +36,8 @@ class AbsenViewModel extends BaseModel {
   final RMQService _rmqService = locator<RMQService>();
   final LocationService _locationService = locator<LocationService>();
   final GuidService _guidService = locator<GuidService>();
-
+  String _networkStatus ='';
+  StreamSubscription<NetworkStatus> subscription;
   String imagePath = '';
   String imageName = '';
   double lat = 0.0;
@@ -46,7 +52,6 @@ class AbsenViewModel extends BaseModel {
   String battery = 'Unknown battery level.';
   List<SimCard> simCard = <SimCard>[];
   String mobileNumber = '';
-
   String phoneNumber = '';
   Future<void> getNumberPhone() async {
     try {
@@ -55,6 +60,68 @@ class AbsenViewModel extends BaseModel {
       print("your phone $phoneNumber");
     } catch (e) {
       phoneNumber = 'error available';
+    }
+  }
+  Future <void>checknetworkstatus (BuildContext context)async{
+    if(imagePath=='') {
+      _alertService.showError(context, 'Error',
+          'Harap Masukan Masukan Gambar', _navigationService.pop);
+    }else if(commentController.text==''){
+      _alertService.showError(context, 'Error',
+          'Kolom Tidak Boleh Kosong', _navigationService.pop);
+    }else {
+      if (Platform.isAndroid) {
+        await Permission.phone.request();
+      }
+      NetworkStatus status = await FlutterReachbility().currentNetworkStatus();
+      switch (status) {
+        case NetworkStatus.unreachable:
+          print("unknow");
+          _networkStatus = 'unknow';
+          No_internet(context);
+          break;
+      //unreachable
+        case NetworkStatus.wifi:
+          print("wifi");
+          _networkStatus = 'wifi';
+          send_data(context);
+          // cek_data();
+          break;
+      //wifi
+        case NetworkStatus.mobile2G:
+          print("2G");
+          _networkStatus = '2G';
+          // send_data(context);
+          No_internet(context);
+          break;
+      //2g
+        case NetworkStatus.moblie3G:
+          print("3G");
+          _networkStatus = '3G';
+          // cek_data();
+          send_data(context);
+          break;
+      //3g
+        case NetworkStatus.moblie4G:
+          print("4G");
+          _networkStatus = '4G';
+          // cek_data();
+          send_data(context);
+          break;
+      //4g
+        case NetworkStatus.moblie5G:
+          print("5G");
+          _networkStatus = '5G';
+          send_data(context);
+          break;
+      //5h
+        case NetworkStatus.otherMoblie:
+          print("unknow");
+          _networkStatus = 'unknow';
+          No_internet(context);
+          break;
+      // other
+      }
     }
   }
 
@@ -66,7 +133,6 @@ class AbsenViewModel extends BaseModel {
     } on PlatformException catch (e) {
       batteryLevel = "-1";
     }
-
     battery = batteryLevel;
     print(battery);
   }
@@ -79,6 +145,7 @@ class AbsenViewModel extends BaseModel {
     getBatteryLevel();
     getNumberPhone();
     writeAttendance("some text");
+    setBusy(false);
   }
 
   Future<void> initMobileNumberState() async {
@@ -115,7 +182,7 @@ class AbsenViewModel extends BaseModel {
       imagePath = words[0];
       imageName = words[1];
       await getLocation();
-      print(imagePath);
+      print('ini path ${imagePath}');
     } on NoSuchMethodError catch (ne) {
       throw StateError(
           'On Back Pressed after no capture photo: ' + ne.toString());
@@ -139,16 +206,18 @@ class AbsenViewModel extends BaseModel {
     await _locationService.checkService();
   }
 
-  Future<String> cek_data() async {
+  Future<void> cek_data() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         print('connected');
-        return "connected";
+        // return "connected";
+        return  true;
       }
     } on SocketException catch (_) {
       print('not connected');
-      return "disconnected";
+      // return "disconnected";
+      return false;
     }
   }
 
@@ -163,168 +232,6 @@ class AbsenViewModel extends BaseModel {
     try {
       File f = await File(file.path).copy(newPath);
     } catch (e) {}
-  }
-
-  void reSendMessages(BuildContext context) async {
-    setBusy(true);
-    print("Kirim Ulang");
-    String directory;
-    List file = new List();
-    directory = (await getExternalStorageDirectory()).path;
-    String path = '$directory/report/';
-    file = Directory('$path').listSync();
-    for (int i = 0; i < file.length; i++) {
-      File newfile = new File(file[i].toString());
-      print(newfile.path.split("/").last.replaceAll("'", ""));
-      File datasurevey =
-      new File('$path' + newfile.path.split("/").last.replaceAll("'", ""));
-      String pathname = newfile.path
-          .split("/")
-          .last
-          .replaceAll("'", "")
-          .toString()
-          .split("-")[0];
-      if (pathname == 'X') {
-        print("path name data ${newfile.path}");
-        final text = json.decode(datasurevey.readAsStringSync());
-        print("datanya");
-        print(text);
-        var absentData = SendAbsen(
-            address: text['ADDRESS'],
-            cmdType: text['CMD_TYPE'],
-            company: text['COMPANY'],
-            description: text['DESCRIPTION'],
-            guid: text['GUID'],
-            image: text['IMAGE'],
-            lat: text['LAT'],
-            long: text['LONG'],
-            localImage: text['LOCAL_IMAGE'],
-            msgType: text['MSG_TYPE'],
-            name: text['NAME'],
-            status: text['STATUS'],
-            timestamp: text['TIMESTAMP'],
-            unit: text['UNIT'],
-            signalCarrier: text['SIGNAL_CARRIER'],
-            signalStrength: text['SIGNAL_STRENGTH'],
-            signalType: text['SIGNAL_TYPE'],
-            reportType: text['REPORT_TYPE']);
-        bool isSuccess = await _ftpService.uploadFile(
-            File(text['LOCAL_IMAGE']), text['GUID'], text['TIMESTAMP']);
-        // print(text['LOCAL_IMAGE']), text['GUID'], text['TIMESTAMP']);
-        if (isSuccess) {
-          print("Kirim ulang ke Rmq");
-          final sendAbsen = sendAbsenToJson(absentData);
-          // print(sendAbsen);
-          // print(newfile.path);
-          // renameFile(newfile.path);
-          // print(sendAbsen);
-          // print(absentData);
-          _rmqService.publish(sendAbsen);
-          // _rmqService.publish(sendAbsen);
-          _alertService.showSuccess(
-            context,
-            'Success',
-            'Berhasil Mengirim Data',
-                () {
-              _navigationService.replaceTo(HomeViewRoute);
-            },
-          );
-        } else {
-          setBusy(false);
-          print("data nya tidak masuk");
-        }
-      }
-    }
-  }
-
-  void sendMessages(BuildContext context) async {
-    print("Tombol di tekan");
-    setBusy(true);
-    // reSendMessages();
-    final date = DateTime.now().millisecondsSinceEpoch.toString();
-    final timestamp = date.substring(0, 10);
-    final name = await _storageService.getString(K_NAME);
-    final company = await _storageService.getString(K_COMPANY);
-    final unit = await _storageService.getString(K_UNIT);
-    final guid = await _storageService.getString(K_GUID);
-    String network = '';
-    var absenData = SendAbsen(
-        address: '$address',
-        cmdType: 0,
-        company: '$company',
-        description: '${kindOfReport}#${commentController.text}',
-        guid: '$guid',
-        image: '$pathLocation$guid$timestamp-PPTIK.jpg',
-        lat: '$lat',
-        long: '$lng',
-        localImage: '$imagePath',
-        msgType: 1,
-        name: '$name',
-        status: 'REPORT',
-        timestamp: '$timestamp',
-        unit: '$unit',
-        signalCarrier: carrierName,
-        signalStrength: int.parse(battery),
-        signalType: phoneNumber,
-        reportType: CODE_FOTO);
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('connected');
-        network = 'connected';
-      }
-    } on SocketException catch (_) {
-      print('not connected');
-      network = 'disconnect';
-    }
-
-    if (network == 'connected') {
-      bool isSuccess =
-      await _ftpService.uploadFile(File(imagePath), guid, timestamp);
-      if (isSuccess) {
-        final sendAbsen = sendAbsenToJson(absenData);
-        print("tes");
-        print(sendAbsen);
-        // print(absenData);
-        _rmqService.publish(sendAbsen);
-        _rmqService.publish(sendAbsen);
-        // storeFile("O", sendAbsen);
-        _alertService.showSuccess(
-          context,
-          'Success',
-          'Data Survey Berhasil Di kirim 🙂',
-              () {
-            _navigationService.replaceTo(DashboardRoute);
-          },
-        );
-      } else {
-        //
-        _alertService.showWarning(
-          context,
-          'Warning',
-          'Gagal Ftp 😭,Connection to server problem, data temporarily will be saved om the device',
-              () {
-            _navigationService.replaceTo(DashboardRoute);
-          },
-        );
-        print("absen");
-        print(absenData.toJson());
-        storeFile("X", sendAbsenToJson(absenData));
-      }
-    } else {
-      _alertService.showWarning(
-        context,
-        'Warning',
-        'Connection to server problem 😭, data temporarily will be saved om the device',
-            () {
-          _navigationService.replaceTo(DashboardRoute);
-        },
-      );
-      print("absen");
-      print(absenData.toJson());
-      storeFile("X", sendAbsenToJson(absenData));
-    }
-    setBusy(false);
   }
 
   void absent(BuildContext context) async {
@@ -456,5 +363,136 @@ class AbsenViewModel extends BaseModel {
     } catch (e) {
       return e.toString();
     }
+  }
+
+  void send_data(BuildContext context)async {
+    final date = DateTime.now().millisecondsSinceEpoch.toString();
+    final timestamp = date.substring(0, 10);
+    final name = await _storageService.getString(K_NAME);
+    final company = await _storageService.getString(K_COMPANY);
+    final unit = await _storageService.getString(K_UNIT);
+    final guid = await _storageService.getString(K_GUID);
+    var surveyData = SendAbsen(
+        address: '$address',
+        cmdType: 0,
+        company: '$company',
+        description: '${kindOfReport}#${commentController.text}',
+        guid: '$guid',
+        image: '$pathLocation$guid$timestamp-PPTIK.jpg',
+        lat: '$lat',
+        long: '$lng',
+        localImage: '$imagePath',
+        msgType: 1,
+        name: '$name',
+        status: 'REPORT',
+        timestamp: '$timestamp',
+        unit: '$unit',
+        signalCarrier: carrierName,
+        signalStrength: int.parse(battery),
+        signalType: phoneNumber,
+        networkStatus:_networkStatus,
+        reportType: CODE_FOTO);
+        final sendAbsen = sendAbsenToJson(surveyData);
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        print(sendAbsen);
+        print(_networkStatus);
+        sendToftp(surveyData,guid,timestamp,context);
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      _alertService.showWarning(
+        context,
+        'Warning',
+        'Connection problem 😭, data temporarily will be saved om the device',
+            () {
+          _navigationService.replaceTo(DashboardRoute);
+        },
+      );
+      sendTolocal(surveyData);
+      setBusy(false);
+    }
+  }
+  void sendToftp(surveyData,String guid,String timestamp,BuildContext context)async{
+    setBusy(true);
+    bool isSuccess =
+    await _ftpService.uploadFile(File(imagePath), guid, timestamp);
+    if(isSuccess){
+      sendToRmq(surveyData,context);
+    }else{
+      _alertService.showWarning(
+        context,
+        'Warning',
+        'Connection Server problem 😭, data temporarily will be saved om the device',
+            () {
+          _navigationService.replaceTo(DashboardRoute);
+        },
+      );
+      sendTolocal(surveyData);
+      setBusy(false);
+    }
+
+  }
+  void sendToRmq(surveyData,BuildContext context)async{
+    final sendSurvey = sendAbsenToJson(surveyData);
+    // print("tes");
+    // print(sendSurvey);
+    _alertService.showSuccess(
+      context,
+      'Success',
+      'Data Survey Berhasil Di kirim 🙂',
+          () {
+        _navigationService.replaceTo(DashboardRoute);
+      },
+    );
+    _rmqService.publish(sendSurvey);
+    setBusy(false);
+    // _rmqService.publish(sendSurvey);
+  }
+  void sendTolocal(surveyData)async{
+    print("absen");
+    print(surveyData.toJson());
+    storeFile("X", sendAbsenToJson(surveyData));
+  }
+  void No_internet(BuildContext context)async{
+    setBusy(true);
+    final date = DateTime.now().millisecondsSinceEpoch.toString();
+    final timestamp = date.substring(0, 10);
+    final name = await _storageService.getString(K_NAME);
+    final company = await _storageService.getString(K_COMPANY);
+    final unit = await _storageService.getString(K_UNIT);
+    final guid = await _storageService.getString(K_GUID);
+    var surveyData = SendAbsen(
+        address: '$address',
+        cmdType: 0,
+        company: '$company',
+        description: '${kindOfReport}#${commentController.text}',
+        guid: '$guid',
+        image: '$pathLocation$guid$timestamp-PPTIK.jpg',
+        lat: '$lat',
+        long: '$lng',
+        localImage: '$imagePath',
+        msgType: 1,
+        name: '$name',
+        status: 'REPORT',
+        timestamp: '$timestamp',
+        unit: '$unit',
+        signalCarrier: carrierName,
+        signalStrength: int.parse(battery),
+        signalType: phoneNumber,
+        networkStatus:_networkStatus,
+        reportType: CODE_FOTO);
+    _alertService.showWarning(
+      context,
+      'Warning',
+      'Connection problem 😭, data temporarily will be saved om the device',
+          () {
+        _navigationService.replaceTo(DashboardRoute);
+      },
+    );
+      sendTolocal(surveyData);
+      setBusy(false);
   }
 }

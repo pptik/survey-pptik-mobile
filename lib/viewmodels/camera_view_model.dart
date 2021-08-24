@@ -25,11 +25,9 @@ class CameraViewModel extends BaseModel {
   void getAvailableCamera(bool mounted) {
     availableCameras().then((availableCameras) {
       cameras = availableCameras;
-
       if (cameras.length > 0) {
         selectedCameraIdx = 1;
         setBusy(false);
-
         _initCameraController(cameras[selectedCameraIdx], mounted)
             .then((void v) {});
       } else {
@@ -79,6 +77,7 @@ class CameraViewModel extends BaseModel {
   }
 
   void onCapturePressed(context) async {
+    print('test');
     final guid = await _storageService.getString(K_GUID);
 
     // Take the Picture in a try / catch block. If anything goes wrong,
@@ -96,7 +95,6 @@ class CameraViewModel extends BaseModel {
       );
       print("eksplorer ${directory.path}");
       await controller.takePicture(path);
-
       _navigationService.popWithValue('$path#$fileName');
     } catch (e) {
       // If an error occurs, log the error to the console.
@@ -105,8 +103,7 @@ class CameraViewModel extends BaseModel {
   }
 
   void onSwitchCamera(bool mounted) {
-    selectedCameraIdx =
-        selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
+    selectedCameraIdx =selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
     CameraDescription selectedCamera = cameras[selectedCameraIdx];
     _initCameraController(selectedCamera, mounted);
   }

@@ -40,7 +40,7 @@ class LoginViewModel extends BaseModel {
     if (emailController.text.length > 0 && passwordController.text.length > 0) {
       final data = await _apiService.newLogin(
           emailController.text, passwordController.text);
-      // print('ini respon:${data}');
+      print('ini respon:${data}');
       // print('ini code:${data.code}');
       if (data != null) {
         // login success
@@ -61,6 +61,7 @@ class LoginViewModel extends BaseModel {
       //   _alertService.showError(context, 'Error ${data.code}',
       //       '${data.message}', _navigationService.pop);
       } else {
+        setBusy(false);
         _alertService.showError(context, 'Error',
             'Harap Masukan Email dan Password Yang Benar', _navigationService.pop);
       }

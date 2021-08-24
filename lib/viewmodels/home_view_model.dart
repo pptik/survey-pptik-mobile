@@ -419,9 +419,6 @@ class HomeViewModel extends BaseModel {
   }
 
   void reSendMessages(BuildContext context) async {
-    // setBusy(true);
-    // Dialogs.showLoadingDialog(context, _keyLoader);
-    // EasyLoading();
     final ProgressDialog pr = ProgressDialog(context);
     pr.style(
         message: 'Sedang Mengirim Ulang..........',
@@ -525,7 +522,7 @@ class HomeViewModel extends BaseModel {
               print(sendAbsen);
               // print(absentData);
               _rmqService.publish(sendAbsen);
-              _rmqService.publish(sendAbsen);
+              // _rmqService.publish(sendAbsen);
               status = true;
             } else {
               pr.hide();

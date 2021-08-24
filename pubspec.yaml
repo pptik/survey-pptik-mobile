@@ -16,10 +16,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0+1
+#  dependencies:
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-
 dependencies:
   flutter:
     sdk: flutter
@@ -60,6 +60,8 @@ dependencies:
   font_awesome_flutter: ^9.1.0
   flutter_easyloading: ^3.0.0
   progress_dialog: ^1.2.4
+  flutter_reachability: ^1.0.0
+  connectivity: ^3.0.6
 
 
 flutter_icons:

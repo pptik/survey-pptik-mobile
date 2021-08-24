@@ -28,6 +28,7 @@ class SendAbsen {
         this.signalStrength,
         this.signalType,
         this.reportType,
+        this.networkStatus,
     });
 
     String description;
@@ -48,6 +49,7 @@ class SendAbsen {
     int signalStrength;
     String signalType;
     String reportType;
+    String networkStatus;
 
     factory SendAbsen.fromJson(Map<String, dynamic> json) => SendAbsen(
         description: json["DESCRIPTION"],
@@ -68,6 +70,7 @@ class SendAbsen {
         signalStrength: json["SIGNAL_STRENGTH"],
         signalType: json["SIGNAL_TYPE"],
         reportType: json["REPORT_TYPE"],
+         networkStatus: json["NETWORKSTATUS"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -89,5 +92,6 @@ class SendAbsen {
         "SIGNAL_STRENGTH": signalStrength,
         "SIGNAL_TYPE": signalType,
         "REPORT_TYPE": reportType,
+        "NETWORKSTATUS":networkStatus,
     };
 }
