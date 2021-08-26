@@ -47,6 +47,7 @@ class Datum {
     String image;
     String description;
     String type;
+    String networkstatus;
 
     Datum({
         this.id,
@@ -59,6 +60,7 @@ class Datum {
         this.image,
         this.description,
         this.type,
+        this.networkstatus
     });
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -71,6 +73,7 @@ class Datum {
         timestamp: json["TIMESTAMP"],
         image: json["IMAGE"],
         description: json["DESCRIPTION"],
+        networkstatus:json["NETWORK_STATUS"],
         type: json["TYPE"],
     );
 
@@ -84,6 +87,7 @@ class Datum {
         "TIMESTAMP": timestamp,
         "IMAGE": image,
         "DESCRIPTION": description,
+        "NETWORK_STATUS":networkstatus,
         "TYPE": type,
     };
 }

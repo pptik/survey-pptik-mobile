@@ -24,9 +24,13 @@ class AbsenData {
   String description;
   String type;
   String reportType;
+  String signalCarrier;
+  int signalStrength;
+  String signalType;
+  String networkstatus;
 
-  AbsenData(
-      {this.id,
+  AbsenData({
+    this.id,
       this.name,
       this.long,
       this.lat,
@@ -40,7 +44,12 @@ class AbsenData {
       this.unit,
       this.description,
       this.type,
-      this.reportType});
+        this.networkstatus,
+      this.reportType,
+    this.signalCarrier,
+    this.signalStrength,
+    this.signalType,
+      });
 
   factory AbsenData.fromJson(Map<String, dynamic> json) => AbsenData(
       id: json["_id"],
@@ -57,6 +66,10 @@ class AbsenData {
       unit: json["UNIT"],
       description: json["DESCRIPTION"],
       type: json["TYPE"],
+      signalStrength:json["SIGNAL_STRENGTH"],
+      signalCarrier:json["SIGNAL_CARRIER"],
+      signalType: json["SIGNAL_TYPE"],
+      networkstatus: json["NETWORK_STATUS"],
       reportType: json["REPORT_TYPE"]);
 
   Map<String, dynamic> toJson() => {
@@ -74,6 +87,12 @@ class AbsenData {
         "UNIT": unit,
         "DESCRIPTION": description,
         "TYPE": type,
-        "REPORT_TYPE": reportType
+        "REPORT_TYPE": reportType ,
+        "NETWORK_STATUS":networkstatus,
+    "SIGNAL_STRENGTH":signalStrength,
+    "SIGNAL_CARRIER":signalCarrier,
+    "SIGNAL_TYPE":signalType
+
+
       };
 }

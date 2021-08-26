@@ -36,7 +36,7 @@ class AbsenViewModel extends BaseModel {
   final RMQService _rmqService = locator<RMQService>();
   final LocationService _locationService = locator<LocationService>();
   final GuidService _guidService = locator<GuidService>();
-  String _networkStatus ='';
+  String _networkStatus ='Unknow';
   StreamSubscription<NetworkStatus> subscription;
   String imagePath = '';
   String imageName = '';
@@ -493,6 +493,7 @@ class AbsenViewModel extends BaseModel {
       },
     );
       sendTolocal(surveyData);
+      print(surveyData);
       setBusy(false);
   }
 }

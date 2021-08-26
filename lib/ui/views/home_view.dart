@@ -101,18 +101,19 @@ class _HomeViewState extends State<HomeView> {
                                   imageUrl:
                                       'http://survey.pptik.id/${model.absenData[idx].image}',
                                   name: '${model.absenData[idx].name}',
-                                  imageLocal:
-                                      '${model.absenData[idx].localImage}',
+                                  networkstatus: '${model.absenData[idx].networkstatus}',
+                                  imageLocal: '${model.absenData[idx].localImage}',
                                   status: '${model.absenData[idx].status}',
                                 ),
                               ),
                             )
                           : Center(
-                              child: CircularProgressIndicator()
-                              // Text(
-                              //   'None',
-                              //   style: profileTextStyle,
-                              // ),
+                              child:
+                              // CircularProgressIndicator()
+                              Text(
+                                'None',
+                                style: profileTextStyle,
+                              ),
                             ),
                     ),
                     Container(

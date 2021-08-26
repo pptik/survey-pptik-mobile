@@ -80,16 +80,27 @@ class HomeViewModel extends BaseModel {
           .split("-")[0];
       print("check pathname $pathname");
       final text = json.decode(datasurevey.readAsStringSync());
-      print(text["DESCRIPTION"]);
+      print(text);
       absenData.add(AbsenData(
           address: text["ADDRESS"],
+          company:text["COMPANY"],
+          lat: text["LAT"],
+          long: text["LONG"],
           description: text["DESCRIPTION"],
-          id: text["GUID"],
+          guid: text["GUID"],
           image: text["IMAGE"],
           name: text["NAME"],
+          signalCarrier:text["SIGNAL_CARRIER"],
+          signalStrength:text["SIGNAL_STRENGTH"],
+          signalType:text["SIGNAL_TYPE"],
+          reportType:text["REPORT_TYPE"],
+          unit: text["UNIT"],
+          networkstatus: text["NETWORK_STATUS"],
           timestamp: int.parse(text["TIMESTAMP"]),
           status: pathname == 'X' ? 'TERTUNDA' : 'TERKIRIM',
-          localImage: text["LOCAL_IMAGE"]));
+          localImage: text["LOCAL_IMAGE"])
+
+      );
       // if(pathname=='X'){
       //   // status: pathname == 'X' ? 'TERTUNDA' : 'TERKIRIM'
       // }
@@ -220,6 +231,7 @@ class HomeViewModel extends BaseModel {
             id: val.id,
             image: val.image,
             name: val.name,
+            networkstatus:val.networkstatus,
             status: 'Terkirim',
             timestamp: val.timestamp,
             localImage: val.localImage));
@@ -421,9 +433,9 @@ class HomeViewModel extends BaseModel {
   void reSendMessages(BuildContext context) async {
     final ProgressDialog pr = ProgressDialog(context);
     pr.style(
-        message: 'Sedang Mengirim Ulang..........',
+        message: 'Loading....',
         borderRadius: 5.0,
-        backgroundColor: color_blue,
+        backgroundColor: color_independent,
         progressWidget: CircularProgressIndicator(),
         elevation: 10.0,
         insetAnimCurve: Curves.easeInOut,
@@ -442,7 +454,7 @@ class HomeViewModel extends BaseModel {
     directory = (await getExternalStorageDirectory()).path;
     String path = '$directory/report/';
     file = Directory('$path').listSync();
-    if (file.isEmpty) {
+    if (absenData.length==0) {
       print('coba kosong');
       // setBusy(false);
       pr.hide();
@@ -497,6 +509,7 @@ class HomeViewModel extends BaseModel {
               unit: text['UNIT'],
               signalCarrier: text['SIGNAL_CARRIER'],
               signalStrength: text['SIGNAL_STRENGTH'],
+              networkStatus: text['NETWORK_STATUS'],
               signalType: text['SIGNAL_TYPE'],
               reportType: text['REPORT_TYPE']);
           try {
@@ -561,7 +574,7 @@ class HomeViewModel extends BaseModel {
           'Laporan Survey Berhasil Di kirim 🙂 ',
           () {
             _navigationService.replaceTo(DashboardRoute);
-            deleteFile(path);
+            // deleteFile(path);
           },
         );
       } else if (network == 'disconnect') {
@@ -598,5 +611,36 @@ class HomeViewModel extends BaseModel {
     try {
       File f = await File(file.path).copy(newPath);
     } catch (e) {}
+  }
+
+  void deleteAll(BuildContext context) {
+    setBusy(true);
+    if(absenData.length==0){
+      _alertService.showError(
+        context,
+        'Warning',
+        'Anda Belum Memiliki Laporan yang belum terkirim !!!',
+            () {
+          _navigationService.replaceTo(DashboardRoute);
+        },
+      );
+    }else {
+      _alertService.showSignOut(
+          context,
+          'Apakah Anda Yakin akan Menghapus semua Report yang belum terkirim??',
+          "", deletetemporary, _navigationService.pop);
+      setBusy(false);
+    }
+    // print('User Sign Out !');
+  }
+
+  void deletetemporary()async{
+    setBusy(true);
+    String Path = '$directory/report/';
+    final dir = Directory(Path);
+    dir.deleteSync(recursive: true);
+    _navigationService.replaceTo(DashboardRoute);
+    setBusy(false);
+
   }
 }

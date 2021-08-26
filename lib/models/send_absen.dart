@@ -28,7 +28,7 @@ class SendAbsen {
         this.signalStrength,
         this.signalType,
         this.reportType,
-        this.networkStatus,
+        this.networkStatus, networkstatus,
     });
 
     String description;
@@ -70,7 +70,7 @@ class SendAbsen {
         signalStrength: json["SIGNAL_STRENGTH"],
         signalType: json["SIGNAL_TYPE"],
         reportType: json["REPORT_TYPE"],
-         networkStatus: json["NETWORKSTATUS"],
+         networkstatus: json["NETWORK_STATUS"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -92,6 +92,6 @@ class SendAbsen {
         "SIGNAL_STRENGTH": signalStrength,
         "SIGNAL_TYPE": signalType,
         "REPORT_TYPE": reportType,
-        "NETWORKSTATUS":networkStatus,
+        "NETWORK_STATUS":networkStatus,
     };
 }

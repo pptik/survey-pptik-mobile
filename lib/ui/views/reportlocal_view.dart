@@ -1,6 +1,9 @@
+import 'package:flutter/widgets.dart';
 import 'package:surveypptik/constants/helper.dart';
 import 'package:surveypptik/constants/route_name.dart';
 import 'package:surveypptik/ui/shared/shared_style.dart';
+import 'package:surveypptik/ui/shared/ui_helper.dart';
+import 'package:surveypptik/ui/widgets/button_widget.dart';
 // import 'package:surveypptik/ui/widgets/list_content_widget.dart';
 import 'package:surveypptik/ui/widgets/list_contentlocal_widget.dart';
 import 'package:surveypptik/viewmodels/home_view_model.dart';
@@ -97,31 +100,37 @@ class _HomeViewState extends State<LocalReportView> {
                                 ),
                                 itemCount: model.absenData.length,
                                 itemBuilder: (ctx, idx) =>
-                                  // GestureDetector()
+                                    // GestureDetector()
 
                                     ListContentLocalWidget(
-
-                                  content:
-                                      '${model.absenData[idx].description}',
-                                  date:
-                                      '${model.formatDate(model.absenData[idx].timestamp)}',
+                                  content: '${model.absenData[idx].description}',
+                                  date: '${model.formatDate(model.absenData[idx].timestamp)}',
                                   address: '${model.absenData[idx].address} ',
-                                  imageUrl:
-                                      'http://survey.pptik.id/${model.absenData[idx].image}',
+                                  imageUrl: 'http://survey.pptik.id/${model.absenData[idx].image}',
                                   name: '${model.absenData[idx].name}',
-                                  imageLocal:
-                                      '${model.absenData[idx].localImage}',
+                                  networkstatus: '${model.absenData[idx].networkstatus}',
+                                  imageLocal: '${model.absenData[idx].localImage}',
                                   status: '${model.absenData[idx].status}',
+                                      guid: '${model.absenData[idx].guid}',
+                                      company: '${model.absenData[idx].company}',
+                                      lat: '${model.absenData[idx].lat}',
+                                      long: '${model.absenData[idx].long}',
+                                      image: '${model.absenData[idx].image}',
+                                      timetamp: '${model.absenData[idx].timestamp}',
+                                      signalType: '${model.absenData[idx].signalType}',
+                                      signalStrength: '${model.absenData[idx].signalStrength}',
+                                      signalCarrier: '${model.absenData[idx].signalCarrier}',
+                                      unit: '${model.absenData[idx].unit}',
                                 ),
                               ),
                             )
                           : Center(
-                              child:CircularProgressIndicator()
-                              // Text(
-                              //   'None',
-                              //   style: profileTextStyle,
-                              // ),
-                            ),
+                          child:
+                              Text(
+                                'None',
+                                style: profileTextStyle,
+                              ),
+                              ),
                     ),
                     Container(
                       height: model.isLoading ? 50.0 : 0,
@@ -130,77 +139,68 @@ class _HomeViewState extends State<LocalReportView> {
                         child: new CircularProgressIndicator(),
                       ),
                     ),
-                    // Container(
-                    //   // padding: EdgeInsets.all(10),
-                    //   margin: const EdgeInsets.only(top: 10.0),
-                    //   height: 50,
-                    //   width: 300,
-                    //   decoration: BoxDecoration(
-                    //       color: Colors.blue,
-                    //       borderRadius: BorderRadius.circular(10)),
-                    //   child: FlatButton(
-                    //     onPressed: () {
-                    //       model.reSendMessages(context);
-
-                    //       // Submit(context);
-                    //       // Navigator.push(
-                    //       //     context, MaterialPageRoute(builder: (_) => HomePage()));
-                    //     },
-                    //     child: Text(
-                    //       'RESEND',
-                    //       style: TextStyle(color: Colors.white, fontSize: 15),
-                    //     ),
-                    //   ),
-                    // ),
+                    verticalSpaceSmall,
+                    ButtonTheme(
+                      minWidth: 300.0,
+                      height: 43.0,
+                      child: RaisedButton(
+                        onPressed: () {
+                          // Resend(context);
+                          model.reSendMessages(context);
+                        },
+                        child: Text("Resend All",style:TextStyle(fontSize: 17),),
+                      ),
+                    ),
+                    verticalSpaceSmall,
+                    // verticalSpaceSmall,
+                    ButtonTheme(
+                      minWidth: 300.0,
+                      height: 43.0,
+                      child: RaisedButton(
+                        onPressed: () {
+                          // Resend(context);
+                          model.deleteAll(context);
+                        },
+                        child: Text("Delete All",style:TextStyle(fontSize: 17),),
+                      ),
+                    ),
+                    verticalSpaceSmall,
                   ],
                 ),
               ),
             ),
           ),
-          floatingActionButton: Stack(children: [
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              FloatingActionButton(
-                backgroundColor: Colors.brown,
-                child: Icon(Icons.send_to_mobile_rounded),
-                onPressed: () {
-                  model.setBusy(false);
-                  model.reSendMessages(context);
-                  // model.goAnotherView(AbsenViewRoute);
-                },
-                heroTag: "AbsenViewRoute",
-              ),
-              // Text('Resend'),
-              // Container(
-              //   // padding: EdgeInsets.all(10),
-              //
-              //   // margin: const EdgeInsets.only(
-              //   //     top: 10, right: 10, left: 10, bottom: 10),
-              //   // height: 50,
-              //   // width: 300,
-              //   // c: TextAlign.center,
-              //   margin: EdgeInsets.all(20),
-              //   decoration: BoxDecoration(
-              //       color: Colors.brown,
-              //       borderRadius: BorderRadius.circular(10)),
-              //   child: FlatButton(
-              //     onPressed: () {
-              //       // EasyLoading.show(status: 'loading...');
-              //       // EasyLoading.init();
-              //       // EasyLoading.show(status: 'loading...');
-              //       model.reSendMessages(context);
-              //       // Submit(context);
-              //       // Navigator.push(
-              //       //     context, MaterialPageRoute(builder: (_) => HomePage()));
-              //     },
-              //     child: Text(
-              //       'RESEND',
-              //       textAlign: TextAlign.center,
-              //       style: TextStyle(color: Colors.white, fontSize: 15,),
-              //     ),
-              //   ),
-              // ),
-            ]),
-          ])),
+
+          // floatingActionButton: Stack(children: [
+          //   Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          //     FloatingActionButton(
+          //       backgroundColor: Colors.brown,
+          //       child: Icon(Icons.send_to_mobile_rounded),
+          //       onPressed: () {
+          //         model.setBusy(false);
+          //         model.reSendMessages(context);
+          //         // model.goAnotherView(AbsenViewRoute);
+          //       },
+          //       heroTag: "AbsenViewRoute",
+          //     ),
+          //   ]),
+          //   // SizedBox.fromSize(10.0)
+          // SizedBox(height: 30,),
+          //   Row(children: [
+          //     // EdgeInsets.all(10),
+          //     FloatingActionButton(
+          //       backgroundColor: Colors.brown,
+          //       child: Icon(Icons.delete),
+          //       onPressed: () {
+          //         model.setBusy(false);
+          //         model.reSendMessages(context);
+          //         // model.goAnotherView(AbsenViewRoute);
+          //       },
+          //       heroTag: "AbsenViewRoute",
+          //     ),
+          //   ]),
+          // ]),
+      ),
     );
   }
 }
